@@ -2,7 +2,7 @@
 
 ## Log Commit Recenti
 
-### 2026-08-10 — ~4h15min
+### 2026-08-10 — ~4h30min
 
 - **~30 min** — Inizializzazione progetto, aggiunto .gitignore e diario.md
 - **~10 min** — Aggiunta documentazione: diagramma UML casi d'uso, architettura a livelli, diagramma ER, gerarchia dei repository (diagrammi già predisposti nella fase di progettazione)
@@ -11,6 +11,7 @@
 - **~2h** — Analisi delle dipendenze e riorganizzazione della struttura
 - **~10 min** — Creato main.py con endpoint root e /health
 - **~5 min** — Creata struttura a livelli del backend: routers, services, repositories, models, schemas, core
+- **~15 min** — Creato core/config.py per leggere le variabili da .env con pydantic-settings
 
 **Attività**
 - Riorganizzata la struttura del backend eliminando un livello di cartelle superfluo
