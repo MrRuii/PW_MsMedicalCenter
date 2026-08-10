@@ -2,13 +2,14 @@
 
 ## Log Commit Recenti
 
-### 2026-08-10 — ~4h
+### 2026-08-10 — ~4h10min
 
 - **~30 min** — Inizializzazione progetto, aggiunto .gitignore e diario.md
 - **~10 min** — Aggiunta documentazione: diagramma UML casi d'uso, architettura a livelli, diagramma ER, gerarchia dei repository (diagrammi già predisposti nella fase di progettazione)
 - **~1h** — Setup progetto BE con uv: fastapi, uvicorn, sqlalchemy, pydantic, python-jose, passlib, python-multipart, bcrypt
 - **~15 min** — Aggiunto .env.example
 - **~2h** — Analisi delle dipendenze e riorganizzazione della struttura
+- **~10 min** — Creato main.py con endpoint root e /health
 
 **Attività**
 - Riorganizzata la struttura del backend eliminando un livello di cartelle superfluo
