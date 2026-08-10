@@ -2,7 +2,7 @@
 
 ## Log Commit Recenti
 
-### 2026-08-10 — ~6h05min
+### 2026-08-10 — ~6h26min
 
 - **~20 min** — Inizializzazione progetto, aggiunto .gitignore e diario.md
 - **~35 min** — Aggiunta documentazione: diagramma UML casi d'uso, architettura a livelli, diagramma ER, gerarchia dei repository (diagrammi già predisposti nella fase di progettazione)
@@ -15,6 +15,7 @@
 - **~15 min** — Creato core/database.py: engine SQLAlchemy (SQLite) e get_db() come dependency
 - **~25 min** — Creati i modelli SQLAlchemy Utente, Paziente, Medico; corretta la direzione delle foreign key nel diagramma ER
 - **~30 min** — Creati i modelli catalogo (Specialita, Prestazione, Sede), agenda (Disponibilita, Appuntamento) e finali (Pagamento, Referto, tabella ponte medico_specialita); revisione e controllo di correttezza rispetto allo schema SQL
+- **~21 min** — Creato seed.py con dati eterogenei generati casualmente e controllo di esistenza per evitare duplicati
 
 **Attività**
 - Riorganizzata la struttura del backend eliminando un livello di cartelle superfluo
