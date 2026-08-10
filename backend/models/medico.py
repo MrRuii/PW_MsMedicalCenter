@@ -2,6 +2,7 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import Base
+from models.medico_specialita import medico_specialita
 
 
 class Medico(Base):
@@ -16,3 +17,8 @@ class Medico(Base):
     numero_albo: Mapped[str | None] = mapped_column(String, unique=True)
 
     utente: Mapped["Utente"] = relationship(back_populates="medico")
+    specialita: Mapped[list["Specialita"]] = relationship(
+        secondary=medico_specialita, back_populates="medici"
+    )
+    disponibilita: Mapped[list["Disponibilita"]] = relationship(back_populates="medico")
+    appuntamenti: Mapped[list["Appuntamento"]] = relationship(back_populates="medico")

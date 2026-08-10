@@ -20,4 +20,4 @@ class Paziente(Base):
     telefono: Mapped[str | None] = mapped_column(String)
 
     utente: Mapped["Utente"] = relationship(back_populates="paziente")
-    
+    appuntamenti: Mapped[list["Appuntamento"]] = relationship(back_populates="paziente")
