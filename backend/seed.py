@@ -1,9 +1,8 @@
 import random
 from datetime import date, timedelta
 
-import bcrypt
-
 from core.database import Base, LocalSession, engine
+from core.security import hash_password
 from models import Medico, Paziente, Prestazione, Sede, Specialita, Utente
 
 DEFAULT_PASSWORD = "Password123!"
@@ -16,10 +15,6 @@ COGNOMI = [
     "Rossi", "Bianchi", "Verdi", "Ferrari", "Esposito", "Colombo", "Ricci",
     "Marino", "Greco", "Bruno", "Gallo", "Conti", "Mancini", "Costa", "Giordano", "Fontana",
 ]
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def random_codice_fiscale() -> str:
