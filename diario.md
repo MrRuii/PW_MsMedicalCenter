@@ -30,7 +30,8 @@
 - Diagramma dei casi d'uso esportato in formato non adatto ai disegni a linee
   → riesportato in PNG
 
-### 2026-08-11 — ~1h42min
+### 2026-08-11 — ~2h05min
 
 - **~1h20min** — Creato core/security.py: hash/verifica password con bcrypt, JWTHandler per creare e decodificare i token JWT
 - **~22 min** — Creati gli schemi Pydantic UtenteCreate, UtenteRead, LoginRequest, TokenRead
+- **~25 min** — Creato AuthService: register_paziente() e login()
