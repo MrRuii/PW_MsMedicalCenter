@@ -30,8 +30,13 @@
 - Diagramma dei casi d'uso esportato in formato non adatto ai disegni a linee
   → riesportato in PNG
 
-### 2026-08-11 — ~2h05min
+### 2026-08-11 — ~2h37min
 
 - **~1h20min** — Creato core/security.py: hash/verifica password con bcrypt, JWTHandler per creare e decodificare i token JWT
 - **~22 min** — Creati gli schemi Pydantic UtenteCreate, UtenteRead, LoginRequest, TokenRead
 - **~25 min** — Creato AuthService: register_paziente() e login()
+- **~32 min** — Creato endpoint POST /api/auth/register (schema RegisterPazienteRequest, router auth, collegato in main.py)
+
+### 2026-08-12 — ~5h
+
+- **~5h** — Creato endpoint POST /api/auth/login, dependency get_current_user() ed endpoint GET /api/auth/me; passata l'autenticazione Swagger da OAuth2PasswordBearer a HTTPBearer per testare i token correttamente; testato su Swagger

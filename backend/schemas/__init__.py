@@ -1,4 +1,10 @@
-from schemas.auth import LoginRequest, TokenRead
+from schemas.auth import LoginRequest, RegisterPazienteRequest, TokenRead
 from schemas.utente import UtenteCreate, UtenteRead
 
-__all__ = ["UtenteCreate", "UtenteRead", "LoginRequest", "TokenRead"]
+__all__ = [
+    "UtenteCreate",
+    "UtenteRead",
+    "LoginRequest",
+    "TokenRead",
+    "RegisterPazienteRequest",
+]
