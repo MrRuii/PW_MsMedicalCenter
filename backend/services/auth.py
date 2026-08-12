@@ -49,6 +49,30 @@ class AuthService:
         self.db.refresh(utente)
         return utente
 
+    def update_utente(
+        self,
+        user_id: int,
+        nome: str | None = None,
+        cognome: str | None = None,
+        telefono: str | None = None,
+    ) -> Utente:
+        utente = self.utente_repository.get_by_id(user_id)
+        if utente is None:
+            raise LookupError("Utente non trovato")
+        if utente.paziente is None:
+            raise ValueError("Questo utente non ha un profilo paziente modificabile")
+
+        if nome is not None:
+            utente.paziente.nome = nome
+        if cognome is not None:
+            utente.paziente.cognome = cognome
+        if telefono is not None:
+            utente.paziente.telefono = telefono
+
+        self.db.commit()
+        self.db.refresh(utente)
+        return utente
+
     def login(self, email: str, password: str) -> TokenRead:
         utente = self.utente_repository.find_by_email(email)
         if utente is None or not verify_password(password, utente.password_hash):
