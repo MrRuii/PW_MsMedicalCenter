@@ -37,6 +37,7 @@
 - **~25 min** — Creato AuthService: register_paziente() e login()
 - **~32 min** — Creato endpoint POST /api/auth/register (schema RegisterPazienteRequest, router auth, collegato in main.py)
 
-### 2026-08-12 — ~5h
+### 2026-08-12 — ~6h30min
 
 - **~5h** — Creato endpoint POST /api/auth/login, dependency get_current_user() ed endpoint GET /api/auth/me; passata l'autenticazione Swagger da OAuth2PasswordBearer a HTTPBearer per testare i token correttamente; testato su Swagger
+- **~1h30min** — Creato RoleChecker come dependency parametrica sui ruoli; endpoint admin PUT/GET su /api/auth/users (singolo e lista), con dettagli presi da Paziente/Medico invece che dalla tabella utenti; testato con paziente, medico e admin

@@ -35,3 +35,15 @@ def get_current_user(
         raise credentials_exception
 
     return utente
+
+class RoleChecker:
+    def __init__(self, allowed_roles: list[str]) -> None:
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, utente: Utente = Depends(get_current_user)) -> Utente:
+        if utente.ruolo not in self.allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Permessi insufficienti",
+            )
+        return utente

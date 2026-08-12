@@ -2,13 +2,40 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
-from core.dependencies import get_current_user
+from core.dependencies import RoleChecker, get_current_user
 from models import Utente
+from repositories.utente import UtenteRepository
 from schemas.auth import LoginRequest, RegisterPazienteRequest, TokenRead
-from schemas.utente import UtenteRead
+from schemas.utente import UtenteDettaglio, UtenteEdit, UtenteEditRequest, UtenteRead
 from services.auth import AuthService
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+
+def _a_utente_dettaglio(utente: Utente) -> UtenteDettaglio:
+    nome = cognome = telefono = codice_fiscale = numero_albo = None
+    if utente.paziente:
+        nome = utente.paziente.nome
+        cognome = utente.paziente.cognome
+        telefono = utente.paziente.telefono
+        codice_fiscale = utente.paziente.codice_fiscale
+    elif utente.medico:
+        nome = utente.medico.nome
+        cognome = utente.medico.cognome
+        numero_albo = utente.medico.numero_albo
+
+    return UtenteDettaglio(
+        id=utente.id,
+        email=utente.email,
+        ruolo=utente.ruolo,
+        is_active=utente.is_active,
+        created_at=utente.created_at,
+        nome=nome,
+        cognome=cognome,
+        telefono=telefono,
+        codice_fiscale=codice_fiscale,
+        numero_albo=numero_albo,
+    )
 
 
 @router.post("/register", response_model=UtenteRead, status_code=status.HTTP_201_CREATED)
@@ -40,3 +67,54 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UtenteRead)
 def me(utente: Utente = Depends(get_current_user)):
     return utente
+
+
+@router.get(
+    "/users/{user_id}",
+    response_model=UtenteDettaglio,
+    dependencies=[Depends(RoleChecker(["admin"]))],
+)
+def get_utente(user_id: int, db: Session = Depends(get_db)):
+    utente = UtenteRepository(db).get_by_id(user_id)
+    if utente is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utente non trovato")
+    return _a_utente_dettaglio(utente)
+
+
+@router.get(
+    "/users",
+    response_model=list[UtenteDettaglio],
+    dependencies=[Depends(RoleChecker(["admin"]))],
+)
+def get_utenti(db: Session = Depends(get_db)):
+    return [_a_utente_dettaglio(u) for u in UtenteRepository(db).get_all()]
+
+
+@router.put(
+    "/users/{user_id}",
+    response_model=UtenteEdit,
+    dependencies=[Depends(RoleChecker(["admin"]))],
+)
+def update_utente(user_id: int, payload: UtenteEditRequest, db: Session = Depends(get_db)):
+    service = AuthService(db)
+    try:
+        utente = service.update_utente(
+            user_id,
+            nome=payload.nome,
+            cognome=payload.cognome,
+            telefono=payload.telefono,
+        )
+    except LookupError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    return UtenteEdit(
+        id=utente.id,
+        email=utente.email,
+        nome=utente.paziente.nome,
+        cognome=utente.paziente.cognome,
+        codice_fiscale=utente.paziente.codice_fiscale,
+        data_nascita=utente.paziente.data_nascita,
+        telefono=utente.paziente.telefono,
+    )
