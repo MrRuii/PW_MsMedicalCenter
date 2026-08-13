@@ -41,3 +41,7 @@
 
 - **~5h** — Creato endpoint POST /api/auth/login, dependency get_current_user() ed endpoint GET /api/auth/me; passata l'autenticazione Swagger da OAuth2PasswordBearer a HTTPBearer per testare i token correttamente; testato su Swagger
 - **~1h30min** — Creato RoleChecker come dependency parametrica sui ruoli; endpoint admin PUT/GET su /api/auth/users (singolo e lista), con dettagli presi da Paziente/Medico invece che dalla tabella utenti; testato con paziente, medico e admin
+
+### 2026-08-13 — ~3h0min
+
+- **~3h0min** — Crezione CRUD: GET /api/specialita (pubblico), GET/POST/PUT/DELETE /api/prestazioni (GET pubblico con filtro specialita, resto admin), GET/POST/PUT/DELETE /api/sedi (stesso schema); aggiunti tags e summary a tutte le rotte per Swagger
