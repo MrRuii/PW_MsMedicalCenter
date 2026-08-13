@@ -38,7 +38,12 @@ def _a_utente_dettaglio(utente: Utente) -> UtenteDettaglio:
     )
 
 
-@router.post("/register", response_model=UtenteRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=UtenteRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Registra un nuovo paziente",
+)
 def register(payload: RegisterPazienteRequest, db: Session = Depends(get_db)):
     service = AuthService(db)
     try:
@@ -55,7 +60,7 @@ def register(payload: RegisterPazienteRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/login", response_model=TokenRead)
+@router.post("/login", response_model=TokenRead, summary="Login e ottenimento del token JWT")
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     service = AuthService(db)
     try:
@@ -64,7 +69,7 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
 
-@router.get("/me", response_model=UtenteRead)
+@router.get("/me", response_model=UtenteRead, summary="Dati dell'utente autenticato")
 def me(utente: Utente = Depends(get_current_user)):
     return utente
 
@@ -73,6 +78,7 @@ def me(utente: Utente = Depends(get_current_user)):
     "/users/{user_id}",
     response_model=UtenteDettaglio,
     dependencies=[Depends(RoleChecker(["admin"]))],
+    summary="Dettaglio di un utente per id (solo admin)",
 )
 def get_utente(user_id: int, db: Session = Depends(get_db)):
     utente = UtenteRepository(db).get_by_id(user_id)
@@ -85,6 +91,7 @@ def get_utente(user_id: int, db: Session = Depends(get_db)):
     "/users",
     response_model=list[UtenteDettaglio],
     dependencies=[Depends(RoleChecker(["admin"]))],
+    summary="Elenco di tutti gli utenti (solo admin)",
 )
 def get_utenti(db: Session = Depends(get_db)):
     return [_a_utente_dettaglio(u) for u in UtenteRepository(db).get_all()]
@@ -94,6 +101,7 @@ def get_utenti(db: Session = Depends(get_db)):
     "/users/{user_id}",
     response_model=UtenteEdit,
     dependencies=[Depends(RoleChecker(["admin"]))],
+    summary="Modifica il profilo di un paziente (solo admin)",
 )
 def update_utente(user_id: int, payload: UtenteEditRequest, db: Session = Depends(get_db)):
     service = AuthService(db)
