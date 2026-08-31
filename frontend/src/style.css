@@ -1,44 +1,13 @@
-:root {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: light dark;
-}
+@import 'tailwindcss';
 
 body {
-  margin: 0;
+  @apply bg-gray-50 text-gray-900;
 }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-  border-bottom: 1px solid #ccc;
+.input {
+  @apply rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500;
 }
 
-main {
-  padding: 24px;
-}
-
-.auth-page {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 0 16px;
-}
-
-.auth-page form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.auth-page label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-button {
-  padding: 8px 16px;
-  cursor: pointer;
-  align-self: flex-start;
+.btn-primary {
+  @apply rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50;
 }

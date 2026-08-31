@@ -1,10 +1,15 @@
 <template>
-  <div class="layout">
-    <header class="app-header">
-      <span>{{ authStore.utente?.email }}</span>
-      <button @click="onLogout">Logout</button>
+  <div class="min-h-screen bg-gray-50">
+    <header class="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm">
+      <span class="font-medium text-gray-700">{{ authStore.utente?.email }}</span>
+      <button
+        @click="onLogout"
+        class="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+      >
+        Logout
+      </button>
     </header>
-    <main>
+    <main class="mx-auto max-w-4xl px-6 py-8">
       <router-view />
     </main>
   </div>

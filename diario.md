@@ -46,7 +46,8 @@
 
 - **~3h0min** — Crezione CRUD: GET /api/specialita (pubblico), GET/POST/PUT/DELETE /api/prestazioni (GET pubblico con filtro specialita, resto admin), GET/POST/PUT/DELETE /api/sedi (stesso schema); aggiunti tags e summary a tutte le rotte per Swagger
 
-### 2026-08-31 — ~6h23min
+### 2026-08-31 — ~7h25min
 
 - **~55 min** — Inizializzato il frontend con Vite (Vue + TypeScript), aggiunte axios/pinia/vue-router;
 - **~5h30min** — Configurato CORSMiddleware sul backend per il frontend locale; creato lo scheletro frontend completo (client axios con interceptor token/401, store Pinia auth, router con guardie su autenticazione e ruolo, layout con header/logout, pagine Login e Registrazione funzionanti contro l'API, 3 dashboard placeholder momenntanee); 
+- **1h** — Aggiunto Tailwind CSS, restyling di login, registrazione, layout e dashboard
