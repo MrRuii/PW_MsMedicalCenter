@@ -27,6 +27,9 @@ class AuthService:
         if self.utente_repository.find_by_email(email):
             raise ValueError("Email già registrata")
 
+        if self.db.query(Paziente).filter_by(codice_fiscale=codice_fiscale).first():
+            raise ValueError("Codice fiscale già registrato")
+
         utente = Utente(
             email=email,
             password_hash=hash_password(password),
