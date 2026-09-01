@@ -1,9 +1,9 @@
 import random
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 
 from core.database import Base, LocalSession, engine
 from core.security import hash_password
-from models import Medico, Paziente, Prestazione, Sede, Specialita, Utente
+from models import Appuntamento, Disponibilita, Medico, Paziente, Prestazione, Sede, Specialita, Utente
 
 DEFAULT_PASSWORD = "Password123!"
 
@@ -14,6 +14,14 @@ NOMI = [
 COGNOMI = [
     "Rossi", "Bianchi", "Verdi", "Ferrari", "Esposito", "Colombo", "Ricci",
     "Marino", "Greco", "Bruno", "Gallo", "Conti", "Mancini", "Costa", "Giordano", "Fontana",
+]
+ORARI = [
+    (time(9, 0), time(9, 30)),
+    (time(9, 30), time(10, 0)),
+    (time(10, 0), time(10, 30)),
+    (time(11, 0), time(11, 30)),
+    (time(15, 0), time(15, 30)),
+    (time(16, 0), time(16, 30)),
 ]
 
 
@@ -89,6 +97,43 @@ def get_or_create_utente(db, email, ruolo) -> tuple[Utente, bool]:
     return utente, True
 
 
+def crea_disponibilita_per_medico(db, medico: Medico, sedi: list[Sede]) -> list[Disponibilita]:
+    slot_creati = []
+    for _ in range(random.randint(4, 6)):
+        nel_passato = random.random() < 0.3
+        if nel_passato:
+            giorno = date.today() - timedelta(days=random.randint(1, 10))
+        else:
+            giorno = date.today() + timedelta(days=random.randint(1, 14))
+        ora_inizio, ora_fine = random.choice(ORARI)
+        sede = random.choice(sedi)
+        disponibilita = Disponibilita(
+            medico_id=medico.id,
+            sede_id=sede.id,
+            data=giorno,
+            ora_inizio=ora_inizio,
+            ora_fine=ora_fine,
+        )
+        db.add(disponibilita)
+        db.flush()
+        slot_creati.append(disponibilita)
+    return slot_creati
+
+
+def prenota_slot(db, disponibilita: Disponibilita, paziente: Paziente, prestazione: Prestazione, stato: str):
+    appuntamento = Appuntamento(
+        paziente_id=paziente.id,
+        disponibilita_id=disponibilita.id,
+        prestazione_id=prestazione.id,
+        medico_id=disponibilita.medico_id,
+        sede_id=disponibilita.sede_id,
+        data_ora=datetime.combine(disponibilita.data, disponibilita.ora_inizio),
+        stato=stato,
+    )
+    db.add(appuntamento)
+    return appuntamento
+
+
 def seed():
     Base.metadata.create_all(bind=engine)
     db = LocalSession()
@@ -134,6 +179,7 @@ def seed():
     random.shuffle(cognomi_disponibili)
 
     medici_creati = []
+    slot_nuovi = []
     for _ in range(random.randint(3, 4)):
         nome, cognome = nomi_disponibili.pop(), cognomi_disponibili.pop()
         utente, creato = get_or_create_utente(
@@ -141,16 +187,18 @@ def seed():
         )
         if not creato:
             continue
-        db.add(
-            Medico(
-                utente_id=utente.id,
-                nome=nome,
-                cognome=cognome,
-                numero_albo=random_numero_albo(),
-                specialita=random.sample(specialita, k=random.randint(1, 2)),
-            )
+        specialita_medico = random.sample(specialita, k=random.randint(1, 2))
+        medico = Medico(
+            utente_id=utente.id,
+            nome=nome,
+            cognome=cognome,
+            numero_albo=random_numero_albo(),
+            specialita=specialita_medico,
         )
+        db.add(medico)
+        db.flush()
         medici_creati.append((nome, cognome))
+        slot_nuovi.extend(crea_disponibilita_per_medico(db, medico, sedi))
 
     pazienti_creati = []
     for _ in range(random.randint(2, 3)):
@@ -173,6 +221,27 @@ def seed():
         )
         pazienti_creati.append((nome, cognome))
 
+    db.flush()
+    tutti_pazienti = db.query(Paziente).all()
+
+    appuntamenti_creati = 0
+    if tutti_pazienti:
+        for disponibilita in slot_nuovi:
+            if random.random() >= 0.6:
+                continue
+            medico = disponibilita.medico
+            prestazioni_del_medico = [
+                p for p in prestazioni if p.specialita_id in {s.id for s in medico.specialita}
+            ] or prestazioni
+            prestazione = random.choice(prestazioni_del_medico)
+            paziente = random.choice(tutti_pazienti)
+            if disponibilita.data < date.today():
+                stato = random.choice(["completato", "annullato"])
+            else:
+                stato = random.choice(["prenotato", "confermato"])
+            prenota_slot(db, disponibilita, paziente, prestazione, stato)
+            appuntamenti_creati += 1
+
     db.commit()
     db.close()
 
@@ -181,7 +250,9 @@ def seed():
     print(f"  Specialita: {len(specialita)}")
     print(f"  Prestazioni: {len(prestazioni)}")
     print(f"  Medici aggiunti: {medici_creati}")
+    print(f"  Disponibilita create: {len(slot_nuovi)}")
     print(f"  Pazienti aggiunti: {pazienti_creati}")
+    print(f"  Appuntamenti creati: {appuntamenti_creati}")
 
 
 if __name__ == "__main__":
