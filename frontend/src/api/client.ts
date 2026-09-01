@@ -14,11 +14,14 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// Se il token non è più valido, disconnette l'utente e torna al login
+// Se il token non è più valido, disconnette l'utente e torna al login.
+// Il login stesso risponde 401 in caso di credenziali sbagliate: non è un
+// token scaduto, quindi va escluso o cancellerebbe l'errore mostrato all'utente.
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const isLoginRequest = error.config?.url?.includes('/api/auth/login')
+    if (error.response?.status === 401 && !isLoginRequest) {
       const authStore = useAuthStore()
       authStore.logout()
       window.location.href = '/login'

@@ -6,6 +6,8 @@ import RegisterView from '../views/RegisterView.vue'
 import PazienteDashboard from '../views/PazienteDashboard.vue'
 import MedicoDashboard from '../views/MedicoDashboard.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
+import PrenotaView from '../views/PrenotaView.vue'
+import AppuntamentiView from '../views/AppuntamentiView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -28,6 +30,18 @@ const router = createRouter({
           path: 'paziente',
           name: 'paziente',
           component: PazienteDashboard,
+          meta: { requiresAuth: true, ruoli: ['paziente'] },
+        },
+        {
+          path: 'paziente/prenota',
+          name: 'prenota',
+          component: PrenotaView,
+          meta: { requiresAuth: true, ruoli: ['paziente'] },
+        },
+        {
+          path: 'paziente/appuntamenti',
+          name: 'appuntamenti',
+          component: AppuntamentiView,
           meta: { requiresAuth: true, ruoli: ['paziente'] },
         },
         {

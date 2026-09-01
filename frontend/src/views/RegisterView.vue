@@ -1,7 +1,8 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-10">
+  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-primary-50 via-white to-accent-50 px-4 py-10">
     <div class="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-      <h1 class="text-2xl font-semibold text-gray-900">Registrazione paziente</h1>
+      <img :src="logoWordmark" alt="MS Medical Center" class="mx-auto h-9" />
+      <h1 class="mt-6 text-2xl font-semibold text-gray-900">Registrazione paziente</h1>
 
       <form @submit.prevent="onSubmit" class="mt-6 flex flex-col gap-4">
         <label class="flex flex-col gap-1">
@@ -56,7 +57,7 @@
       </form>
 
       <p class="mt-6 text-center text-sm text-gray-500">
-        <router-link to="/login" class="text-indigo-600 hover:underline">
+        <router-link to="/login" class="text-primary-600 hover:underline">
           Hai già un account? Accedi
         </router-link>
       </p>
@@ -67,6 +68,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import apiClient from '../api/client'
+import logoWordmark from '../assets/logo-wordmark.png'
 
 const form = reactive({
   email: '',

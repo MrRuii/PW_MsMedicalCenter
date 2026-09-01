@@ -1,13 +1,70 @@
 @import 'tailwindcss';
 
+/* Palette presa dai colori reali del logo MS Medical Center (blu e verde) */
+@theme {
+  --color-primary-50: #ebf6fe;
+  --color-primary-100: #d3ecfd;
+  --color-primary-200: #9dd4fb;
+  --color-primary-300: #63baf8;
+  --color-primary-400: #1597f5;
+  --color-primary-500: #0870ba;
+  --color-primary-600: #075b97;
+  --color-primary-700: #054675;
+  --color-primary-800: #043558;
+  --color-primary-900: #03263f;
+
+  --color-accent-50: #f0f9f5;
+  --color-accent-100: #daf1e7;
+  --color-accent-200: #b5e3cf;
+  --color-accent-300: #91d4b6;
+  --color-accent-400: #73c9a3;
+  --color-accent-500: #5abf92;
+  --color-accent-600: #41a97b;
+  --color-accent-700: #338461;
+  --color-accent-800: #266348;
+  --color-accent-900: #1b4633;
+}
+
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-primary-50 text-gray-900;
 }
 
 .input {
-  @apply rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500;
+  @apply rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500;
 }
 
 .btn-primary {
-  @apply rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50;
+  @apply rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-700 disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 disabled:opacity-50;
+}
+
+.option-card {
+  @apply block rounded-md border border-gray-200 p-4 text-left transition hover:border-primary-400 hover:bg-primary-50;
+}
+
+.chip {
+  @apply rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 hover:bg-primary-100;
+}
+
+.badge {
+  @apply rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap;
+}
+
+.badge-giallo {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.badge-verde {
+  @apply bg-accent-100 text-accent-800;
+}
+
+.badge-grigio {
+  @apply bg-gray-100 text-gray-600;
+}
+
+.badge-rosso {
+  @apply bg-red-100 text-red-700;
 }

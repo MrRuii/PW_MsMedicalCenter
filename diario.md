@@ -52,6 +52,7 @@
 - **~5h30min** — Configurato CORSMiddleware sul backend per il frontend locale; creato lo scheletro frontend completo (client axios con interceptor token/401, store Pinia auth, router con guardie su autenticazione e ruolo, layout con header/logout, pagine Login e Registrazione funzionanti contro l'API, 3 dashboard placeholder momenntanee); 
 - **1h** — Aggiunto Tailwind CSS, restyling di login, registrazione, layout e dashboard
 
-### 2026-09-01 — ~10h
+### 2026-09-01 — ~17h10min
 
 - **~10h** — Modulo prenotazioni: endpoint BE completi (repository/schemi/service/router per Medici, Disponibilita e Appuntamenti; CRUD medici admin, gestione disponibilità del medico, prenotazione con controllo slot libero, conferma/completamento/annullamento appuntamenti) e nuovo seed esteso a disponibilità e appuntamenti
+- **~7h** — Frontend paziente: pagina Prenota (specialità, prestazione, sede, slot, conferma con prezzo) e pagina I miei appuntamenti con annulla; fix bug login; aggiunto logo palette colori

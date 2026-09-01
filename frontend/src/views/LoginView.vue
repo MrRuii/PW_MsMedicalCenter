@@ -1,7 +1,8 @@
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+  <div class="flex min-h-screen items-center justify-center bg-linear-to-br from-primary-50 via-white to-accent-50 px-4">
     <div class="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-      <h1 class="text-2xl font-semibold text-gray-900">Accedi</h1>
+      <img :src="logoWordmark" alt="MS Medical Center" class="mx-auto h-9" />
+      <h1 class="mt-6 text-2xl font-semibold text-gray-900">Accedi</h1>
 
       <form @submit.prevent="onSubmit" class="mt-6 flex flex-col gap-4">
         <label class="flex flex-col gap-1">
@@ -36,7 +37,7 @@
       </form>
 
       <p class="mt-6 text-center text-sm text-gray-500">
-        <router-link to="/registrazione" class="text-indigo-600 hover:underline">
+        <router-link to="/registrazione" class="text-primary-600 hover:underline">
           Non hai un account? Registrati
         </router-link>
       </p>
@@ -48,6 +49,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import logoWordmark from '../assets/logo-wordmark.png'
 
 const email = ref('')
 const password = ref('')
