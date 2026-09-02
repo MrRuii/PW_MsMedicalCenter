@@ -58,19 +58,32 @@ class AuthService:
         nome: str | None = None,
         cognome: str | None = None,
         telefono: str | None = None,
+        numero_albo: str | None = None,
+        is_active: bool | None = None,
     ) -> Utente:
         utente = self.utente_repository.get_by_id(user_id)
         if utente is None:
             raise LookupError("Utente non trovato")
-        if utente.paziente is None:
-            raise ValueError("Questo utente non ha un profilo paziente modificabile")
 
-        if nome is not None:
-            utente.paziente.nome = nome
-        if cognome is not None:
-            utente.paziente.cognome = cognome
+        if is_active is not None:
+            utente.is_active = is_active
+
+        profilo = utente.paziente or utente.medico
+        if nome is not None or cognome is not None:
+            if profilo is None:
+                raise ValueError("Questo utente non ha un profilo modificabile")
+            if nome is not None:
+                profilo.nome = nome
+            if cognome is not None:
+                profilo.cognome = cognome
         if telefono is not None:
+            if utente.paziente is None:
+                raise ValueError("Il telefono è modificabile solo per i pazienti")
             utente.paziente.telefono = telefono
+        if numero_albo is not None:
+            if utente.medico is None:
+                raise ValueError("Il numero albo è modificabile solo per i medici")
+            utente.medico.numero_albo = numero_albo
 
         self.db.commit()
         self.db.refresh(utente)
@@ -80,6 +93,8 @@ class AuthService:
         utente = self.utente_repository.find_by_email(email)
         if utente is None or not verify_password(password, utente.password_hash):
             raise ValueError("Credenziali non valide")
+        if not utente.is_active:
+            raise ValueError("Utente disabilitato, contattare un amministratore per maggiori dettagli")
 
         token = self.jwt_handler.create_token({"sub": str(utente.id), "ruolo": utente.ruolo})
         return TokenRead(access_token=token)

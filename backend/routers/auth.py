@@ -6,7 +6,7 @@ from core.dependencies import RoleChecker, get_current_user
 from models import Utente
 from repositories.utente import UtenteRepository
 from schemas.auth import LoginRequest, RegisterPazienteRequest, TokenRead
-from schemas.utente import UtenteDettaglio, UtenteEdit, UtenteEditRequest, UtenteRead
+from schemas.utente import UtenteDettaglio, UtenteEditRequest, UtenteRead
 from services.auth import AuthService
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -107,9 +107,9 @@ def get_utenti(db: Session = Depends(get_db)):
 
 @router.put(
     "/users/{user_id}",
-    response_model=UtenteEdit,
+    response_model=UtenteDettaglio,
     dependencies=[Depends(RoleChecker(["admin"]))],
-    summary="Modifica il profilo di un paziente (solo admin)",
+    summary="Modifica il profilo o lo stato di un utente (solo admin)",
 )
 def update_utente(user_id: int, payload: UtenteEditRequest, db: Session = Depends(get_db)):
     service = AuthService(db)
@@ -119,18 +119,12 @@ def update_utente(user_id: int, payload: UtenteEditRequest, db: Session = Depend
             nome=payload.nome,
             cognome=payload.cognome,
             telefono=payload.telefono,
+            numero_albo=payload.numero_albo,
+            is_active=payload.is_active,
         )
     except LookupError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-    return UtenteEdit(
-        id=utente.id,
-        email=utente.email,
-        nome=utente.paziente.nome,
-        cognome=utente.paziente.cognome,
-        codice_fiscale=utente.paziente.codice_fiscale,
-        data_nascita=utente.paziente.data_nascita,
-        telefono=utente.paziente.telefono,
-    )
+    return _a_utente_dettaglio(utente)

@@ -44,6 +44,19 @@ export interface PazienteBreve {
   telefono: string | null
 }
 
+export interface UtenteDettaglio {
+  id: number
+  email: string
+  ruolo: string
+  is_active: boolean
+  created_at: string
+  nome: string | null
+  cognome: string | null
+  telefono: string | null
+  codice_fiscale: string | null
+  numero_albo: string | null
+}
+
 export interface Appuntamento {
   id: number
   paziente_id: number

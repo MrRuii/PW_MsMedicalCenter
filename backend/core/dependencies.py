@@ -34,6 +34,13 @@ def get_current_user(
     if utente is None:
         raise credentials_exception
 
+    if not utente.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Utente disabilitato, contattare un amministratore per maggiori dettagli",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
     return utente
 
 class RoleChecker:

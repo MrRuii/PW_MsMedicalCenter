@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -21,20 +21,12 @@ class UtenteRead(BaseModel):
     paziente_id: int | None = None
 
 
-class UtenteEdit(BaseModel):
-    id: int
-    email: EmailStr
-    nome: str
-    cognome: str
-    codice_fiscale: str
-    data_nascita: date | None
-    telefono: str | None
-
-
 class UtenteEditRequest(BaseModel):
     nome: str | None = None
     cognome: str | None = None
     telefono: str | None = None
+    numero_albo: str | None = None
+    is_active: bool | None = None
 
 
 class UtenteDettaglio(BaseModel):

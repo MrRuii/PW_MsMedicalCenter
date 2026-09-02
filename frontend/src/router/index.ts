@@ -10,6 +10,8 @@ import PrenotaView from '../views/PrenotaView.vue'
 import AppuntamentiView from '../views/AppuntamentiView.vue'
 import AgendaView from '../views/AgendaView.vue'
 import DisponibilitaMedicoView from '../views/DisponibilitaMedicoView.vue'
+import GestioneUtentiView from '../views/GestioneUtentiView.vue'
+import CreaMedicoView from '../views/CreaMedicoView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -68,6 +70,18 @@ const router = createRouter({
           path: 'admin',
           name: 'admin',
           component: AdminDashboard,
+          meta: { requiresAuth: true, ruoli: ['admin'] },
+        },
+        {
+          path: 'admin/utenti',
+          name: 'gestione-utenti',
+          component: GestioneUtentiView,
+          meta: { requiresAuth: true, ruoli: ['admin'] },
+        },
+        {
+          path: 'admin/nuovo-medico',
+          name: 'crea-medico',
+          component: CreaMedicoView,
           meta: { requiresAuth: true, ruoli: ['admin'] },
         },
       ],

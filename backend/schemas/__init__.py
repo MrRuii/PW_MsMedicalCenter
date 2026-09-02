@@ -5,7 +5,6 @@ from schemas.specialita import SpecialitaRead
 from schemas.utente import (
     UtenteCreate,
     UtenteDettaglio,
-    UtenteEdit,
     UtenteEditRequest,
     UtenteRead,
 )
@@ -13,7 +12,6 @@ from schemas.utente import (
 __all__ = [
     "UtenteCreate",
     "UtenteRead",
-    "UtenteEdit",
     "UtenteEditRequest",
     "UtenteDettaglio",
     "LoginRequest",

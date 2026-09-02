@@ -65,8 +65,8 @@ async function onSubmit() {
   try {
     await authStore.login(email.value, password.value)
     await router.push(`/${authStore.ruolo}`)
-  } catch {
-    errore.value = 'Email o password non corretti'
+  } catch (e: any) {
+    errore.value = e.response?.data?.detail ?? 'Email o password non corretti'
   } finally {
     caricamento.value = false
   }
