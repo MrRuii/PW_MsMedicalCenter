@@ -87,5 +87,9 @@ class MedicoService:
         return self.medico_repository.update(medico)
 
     def delete(self, medico_id: int) -> None:
-        if not self.medico_repository.delete(medico_id):
+        medico = self.medico_repository.get_by_id(medico_id)
+        if medico is None:
             raise LookupError("Medico non trovato")
+        utente_id = medico.utente_id
+        self.medico_repository.delete(medico_id)
+        self.utente_repository.delete(utente_id)
