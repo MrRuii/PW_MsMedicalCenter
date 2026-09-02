@@ -17,6 +17,8 @@ class UtenteRead(BaseModel):
     ruolo: str
     is_active: bool
     created_at: datetime
+    medico_id: int | None = None
+    paziente_id: int | None = None
 
 
 class UtenteEdit(BaseModel):

@@ -35,9 +35,6 @@ class AppuntamentoService:
 
         data_ora = datetime.combine(disponibilita.data, disponibilita.ora_inizio)
 
-        # Disponibilita-Appuntamento e' una relazione 1 a 1: se questo slot era stato
-        # prenotato e poi annullato, la riga esiste gia' e va riusata invece di crearne
-        # una seconda (violerebbe l'unicita' dello slot e il vincolo di integrita').
         appuntamento_esistente = disponibilita.appuntamento
         if appuntamento_esistente is not None:
             appuntamento_esistente.paziente_id = paziente_id
@@ -70,7 +67,7 @@ class AppuntamentoService:
         return self.appuntamento_repository.update(appuntamento)
 
     def completa(self, appuntamento: Appuntamento) -> Appuntamento:
-        if appuntamento.stato != "confermato":
-            raise ValueError("Solo un appuntamento confermato può essere completato")
+        if appuntamento.stato not in ("prenotato", "confermato"):
+            raise ValueError("Solo un appuntamento prenotato o confermato può essere completato")
         appuntamento.stato = "completato"
         return self.appuntamento_repository.update(appuntamento)

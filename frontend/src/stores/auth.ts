@@ -8,6 +8,8 @@ export interface Utente {
   ruolo: string
   is_active: boolean
   created_at: string
+  medico_id: number | null
+  paziente_id: number | null
 }
 
 interface TokenResponse {

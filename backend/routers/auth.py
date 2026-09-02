@@ -71,7 +71,15 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UtenteRead, summary="Dati dell'utente autenticato")
 def me(utente: Utente = Depends(get_current_user)):
-    return utente
+    return UtenteRead(
+        id=utente.id,
+        email=utente.email,
+        ruolo=utente.ruolo,
+        is_active=utente.is_active,
+        created_at=utente.created_at,
+        medico_id=utente.medico.id if utente.medico else None,
+        paziente_id=utente.paziente.id if utente.paziente else None,
+    )
 
 
 @router.get(

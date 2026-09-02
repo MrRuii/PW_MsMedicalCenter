@@ -56,3 +56,7 @@
 
 - **~10h** — Modulo prenotazioni: endpoint BE completi (repository/schemi/service/router per Medici, Disponibilita e Appuntamenti; CRUD medici admin, gestione disponibilità del medico, prenotazione con controllo slot libero, conferma/completamento/annullamento appuntamenti) e nuovo seed esteso a disponibilità e appuntamenti
 - **~7h** — Frontend paziente: pagina Prenota (specialità, prestazione, sede, slot, conferma con prezzo) e pagina I miei appuntamenti con annulla; fix bug login; aggiunto logo palette colori
+
+### 2026-09-02 — ~5h05min
+
+- **~5h05min** — Frontend medico: agenda e disponibilità; qualche fix al backend 

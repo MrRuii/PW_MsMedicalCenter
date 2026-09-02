@@ -42,7 +42,6 @@
 
     <p v-if="errore" class="text-sm text-red-600">{{ errore }}</p>
 
-    <!-- Passo 1: specialita -->
     <section v-if="passo === 1" class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <h2 class="font-medium text-gray-900">1. Scegli la specialità</h2>
       <p v-if="caricamento" class="mt-4 text-sm text-gray-500">Caricamento...</p>
@@ -54,7 +53,6 @@
       </div>
     </section>
 
-    <!-- Passo 2: prestazione -->
     <section v-else-if="passo === 2" class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <h2 class="font-medium text-gray-900">2. Scegli la prestazione</h2>
       <p v-if="caricamento" class="mt-4 text-sm text-gray-500">Caricamento...</p>
@@ -70,7 +68,6 @@
       <button class="btn-secondary mt-4" @click="tornaA(1)">← Indietro</button>
     </section>
 
-    <!-- Passo 3: sede -->
     <section v-else-if="passo === 3" class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <h2 class="font-medium text-gray-900">3. Scegli la sede</h2>
       <p v-if="caricamento" class="mt-4 text-sm text-gray-500">Caricamento...</p>
@@ -83,7 +80,6 @@
       <button class="btn-secondary mt-4" @click="tornaA(2)">← Indietro</button>
     </section>
 
-    <!-- Passo 4: slot liberi -->
     <section v-else-if="passo === 4" class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <h2 class="font-medium text-gray-900">4. Scegli data e ora</h2>
       <p v-if="caricamento" class="mt-4 text-sm text-gray-500">Caricamento...</p>
@@ -101,7 +97,6 @@
       <button class="btn-secondary mt-4" @click="tornaA(3)">← Indietro</button>
     </section>
 
-    <!-- Passo 5: conferma -->
     <section v-else-if="passo === 5" class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <template v-if="!prenotazioneOk">
         <h2 class="font-medium text-gray-900">5. Conferma la prenotazione</h2>
@@ -152,6 +147,7 @@
 import { computed, onMounted, ref } from 'vue'
 import apiClient from '../api/client'
 import type { Disponibilita, Medico, Prestazione, Sede, Specialita } from '../types'
+import { formatData, formatOra, formatPrezzo } from '../utils/formato'
 
 const FASI = ['Specialità', 'Prestazione', 'Sede', 'Orario', 'Conferma']
 
@@ -297,18 +293,5 @@ function nuovaPrenotazione() {
   slotScelto.value = null
   prenotazioneOk.value = false
   erroreConferma.value = ''
-}
-
-function formatData(data: string): string {
-  const d = new Date(`${data}T00:00:00`)
-  return d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })
-}
-
-function formatOra(ora: string): string {
-  return ora.slice(0, 5)
-}
-
-function formatPrezzo(prezzo: number): string {
-  return `€ ${prezzo.toFixed(2)}`
 }
 </script>

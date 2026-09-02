@@ -43,6 +43,8 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import apiClient from '../api/client'
 import type { Appuntamento, Medico, Prestazione, Sede } from '../types'
+import { formatDataOra } from '../utils/formato'
+import { badgeClasse, etichettaStato, puoAnnullare } from '../utils/statoAppuntamento'
 
 const appuntamenti = ref<Appuntamento[]>([])
 const mediciList = ref<Medico[]>([])
@@ -88,46 +90,6 @@ function sedeDi(app: Appuntamento) {
 }
 function prestazioneDi(app: Appuntamento) {
   return prestazioniList.value.find((p) => p.id === app.prestazione_id)
-}
-
-function formatDataOra(dataOra: string): string {
-  const d = new Date(dataOra)
-  return d.toLocaleDateString('it-IT', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
-const ETICHETTE_STATO: Record<string, string> = {
-  prenotato: 'Prenotato',
-  confermato: 'Confermato',
-  completato: 'Completato',
-  annullato: 'Annullato',
-}
-function etichettaStato(stato: string): string {
-  return ETICHETTE_STATO[stato] ?? stato
-}
-
-function badgeClasse(stato: string): string {
-  switch (stato) {
-    case 'prenotato':
-      return 'badge-giallo'
-    case 'confermato':
-      return 'badge-verde'
-    case 'completato':
-      return 'badge-grigio'
-    case 'annullato':
-      return 'badge-rosso'
-    default:
-      return 'badge-grigio'
-  }
-}
-
-function puoAnnullare(stato: string): boolean {
-  return stato === 'prenotato' || stato === 'confermato'
 }
 
 async function annulla(app: Appuntamento) {

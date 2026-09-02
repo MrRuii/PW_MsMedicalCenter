@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-/* Palette presa dai colori reali del logo MS Medical Center (blu e verde) */
 @theme {
   --color-primary-50: #ebf6fe;
   --color-primary-100: #d3ecfd;

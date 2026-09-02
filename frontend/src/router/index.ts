@@ -8,6 +8,8 @@ import MedicoDashboard from '../views/MedicoDashboard.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
 import PrenotaView from '../views/PrenotaView.vue'
 import AppuntamentiView from '../views/AppuntamentiView.vue'
+import AgendaView from '../views/AgendaView.vue'
+import DisponibilitaMedicoView from '../views/DisponibilitaMedicoView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -51,6 +53,18 @@ const router = createRouter({
           meta: { requiresAuth: true, ruoli: ['medico'] },
         },
         {
+          path: 'medico/agenda',
+          name: 'agenda',
+          component: AgendaView,
+          meta: { requiresAuth: true, ruoli: ['medico'] },
+        },
+        {
+          path: 'medico/disponibilita',
+          name: 'disponibilita-medico',
+          component: DisponibilitaMedicoView,
+          meta: { requiresAuth: true, ruoli: ['medico'] },
+        },
+        {
           path: 'admin',
           name: 'admin',
           component: AdminDashboard,
@@ -69,7 +83,6 @@ router.beforeEach(async (to) => {
     return '/login'
   }
 
-  // Dopo un ricaricamento della pagina abbiamo il token ma non ancora i dati utente
   if (authStore.isAuthenticated && !authStore.utente) {
     try {
       await authStore.fetchUtente()

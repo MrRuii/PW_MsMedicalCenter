@@ -5,7 +5,6 @@ const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 })
 
-// Aggiunge il token a ogni richiesta, se presente
 apiClient.interceptors.request.use((config) => {
   const authStore = useAuthStore()
   if (authStore.token) {
@@ -14,9 +13,6 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// Se il token non è più valido, disconnette l'utente e torna al login.
-// Il login stesso risponde 401 in caso di credenziali sbagliate: non è un
-// token scaduto, quindi va escluso o cancellerebbe l'errore mostrato all'utente.
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {

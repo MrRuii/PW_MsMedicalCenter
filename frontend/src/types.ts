@@ -37,9 +37,17 @@ export interface Disponibilita {
   libera: boolean
 }
 
+export interface PazienteBreve {
+  id: number
+  nome: string
+  cognome: string
+  telefono: string | null
+}
+
 export interface Appuntamento {
   id: number
   paziente_id: number
+  paziente: PazienteBreve
   medico_id: number
   sede_id: number
   prestazione_id: number
