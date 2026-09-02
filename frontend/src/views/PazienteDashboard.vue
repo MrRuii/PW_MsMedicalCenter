@@ -5,7 +5,7 @@
       <p class="mt-2 text-gray-500">Da qui puoi prenotare una visita e gestire i tuoi appuntamenti.</p>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2">
+    <div class="grid gap-4 sm:grid-cols-3">
       <router-link
         to="/paziente/prenota"
         class="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:border-primary-300 hover:shadow-md"
@@ -30,6 +30,19 @@
         </span>
         <span class="mt-4 block font-medium text-gray-900 group-hover:text-accent-800">I miei appuntamenti</span>
         <span class="mt-1 block text-sm text-gray-500">Consulta lo stato e annulla se necessario</span>
+      </router-link>
+
+      <router-link
+        to="/paziente/referti"
+        class="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:border-primary-300 hover:shadow-md"
+      >
+        <span class="flex h-10 w-10 items-center justify-center rounded-md bg-primary-100 text-primary-700">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h1m5 12H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l3.414 3.414a1 1 0 0 1 .293.707V18a2 2 0 0 1-2 2Z" />
+          </svg>
+        </span>
+        <span class="mt-4 block font-medium text-gray-900 group-hover:text-primary-700">I miei referti</span>
+        <span class="mt-1 block text-sm text-gray-500">Scarica i referti caricati dai medici</span>
       </router-link>
     </div>
   </div>

@@ -69,3 +69,10 @@ export interface Appuntamento {
   stato: string
   created_at: string | null
 }
+
+export interface Referto {
+  id: number
+  appuntamento_id: number
+  data: string
+  descrizione: string | null
+}

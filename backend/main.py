@@ -6,6 +6,7 @@ from routers.auth import router as auth_router
 from routers.disponibilita import router as disponibilita_router
 from routers.medici import router as medici_router
 from routers.prestazioni import router as prestazioni_router
+from routers.referti import router as referti_router
 from routers.sedi import router as sedi_router
 from routers.specialita import router as specialita_router
 
@@ -26,6 +27,7 @@ app.include_router(sedi_router)
 app.include_router(medici_router)
 app.include_router(disponibilita_router)
 app.include_router(appuntamenti_router)
+app.include_router(referti_router)
 
 
 @app.get("/", tags=["root"], summary="Messaggio di benvenuto")

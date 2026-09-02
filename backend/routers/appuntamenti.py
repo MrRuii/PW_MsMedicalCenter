@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from core.database import get_db
@@ -6,7 +6,9 @@ from core.dependencies import RoleChecker, get_current_user
 from models import Utente
 from repositories.appuntamento import AppuntamentoRepository
 from schemas.appuntamento import AppuntamentoCreate, AppuntamentoRead
+from schemas.referto import RefertoRead
 from services.appuntamento import AppuntamentoService, SlotNonDisponibileError
+from services.referto import RefertoService
 
 router = APIRouter(prefix="/api/appuntamenti", tags=["appuntamenti"])
 
@@ -19,6 +21,15 @@ def _e_parte_in_causa(utente: Utente, appuntamento) -> bool:
     if utente.medico is not None and appuntamento.medico_id == utente.medico.id:
         return True
     return False
+
+
+def _medico_id_del_richiedente(utente: Utente) -> int:
+    if utente.medico is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo un medico può caricare un referto",
+        )
+    return utente.medico.id
 
 
 def _get_o_404(db: Session, appuntamento_id: int):
@@ -144,5 +155,37 @@ def completa_appuntamento(
     _verifica_accesso(utente, appuntamento)
     try:
         return AppuntamentoService(db).completa(appuntamento)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post(
+    "/{appuntamento_id}/referto",
+    response_model=RefertoRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Il medico (o admin) carica il referto di un appuntamento completato",
+    dependencies=[Depends(RoleChecker(["medico", "admin"]))],
+)
+async def carica_referto(
+    appuntamento_id: int,
+    file: UploadFile = File(...),
+    descrizione: str | None = Form(None),
+    utente: Utente = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    richiedente_medico_id = None if utente.ruolo == "admin" else _medico_id_del_richiedente(utente)
+    contenuto = await file.read()
+    try:
+        return RefertoService(db).carica(
+            appuntamento_id=appuntamento_id,
+            richiedente_medico_id=richiedente_medico_id,
+            content_type=file.content_type,
+            contenuto=contenuto,
+            descrizione=descrizione,
+        )
+    except LookupError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

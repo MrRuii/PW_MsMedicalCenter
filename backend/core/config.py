@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     database_url: str = "sqlite:///./app.db"
+    referti_storage_path: str = "storage/referti"
+    referti_max_size_mb: int = 20
 
 
 settings = Settings()

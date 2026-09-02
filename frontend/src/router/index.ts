@@ -12,6 +12,8 @@ import AgendaView from '../views/AgendaView.vue'
 import DisponibilitaMedicoView from '../views/DisponibilitaMedicoView.vue'
 import GestioneUtentiView from '../views/GestioneUtentiView.vue'
 import CreaMedicoView from '../views/CreaMedicoView.vue'
+import MedicoRefertiView from '../views/MedicoRefertiView.vue'
+import PazienteRefertiView from '../views/PazienteRefertiView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -49,6 +51,12 @@ const router = createRouter({
           meta: { requiresAuth: true, ruoli: ['paziente'] },
         },
         {
+          path: 'paziente/referti',
+          name: 'paziente-referti',
+          component: PazienteRefertiView,
+          meta: { requiresAuth: true, ruoli: ['paziente'] },
+        },
+        {
           path: 'medico',
           name: 'medico',
           component: MedicoDashboard,
@@ -64,6 +72,12 @@ const router = createRouter({
           path: 'medico/disponibilita',
           name: 'disponibilita-medico',
           component: DisponibilitaMedicoView,
+          meta: { requiresAuth: true, ruoli: ['medico'] },
+        },
+        {
+          path: 'medico/referti',
+          name: 'medico-referti',
+          component: MedicoRefertiView,
           meta: { requiresAuth: true, ruoli: ['medico'] },
         },
         {
