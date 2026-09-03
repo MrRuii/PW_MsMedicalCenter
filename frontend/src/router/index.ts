@@ -14,6 +14,7 @@ import GestioneUtentiView from '../views/GestioneUtentiView.vue'
 import CreaMedicoView from '../views/CreaMedicoView.vue'
 import MedicoRefertiView from '../views/MedicoRefertiView.vue'
 import PazienteRefertiView from '../views/PazienteRefertiView.vue'
+import DashboardIncassiView from '../views/DashboardIncassiView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -96,6 +97,12 @@ const router = createRouter({
           path: 'admin/nuovo-medico',
           name: 'crea-medico',
           component: CreaMedicoView,
+          meta: { requiresAuth: true, ruoli: ['admin'] },
+        },
+        {
+          path: 'admin/dashboard',
+          name: 'dashboard-incassi',
+          component: DashboardIncassiView,
           meta: { requiresAuth: true, ruoli: ['admin'] },
         },
       ],

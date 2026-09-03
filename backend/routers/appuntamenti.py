@@ -6,8 +6,10 @@ from core.dependencies import RoleChecker, get_current_user
 from models import Utente
 from repositories.appuntamento import AppuntamentoRepository
 from schemas.appuntamento import AppuntamentoCreate, AppuntamentoRead
+from schemas.pagamento import PagamentoCreate, PagamentoRead
 from schemas.referto import RefertoRead
 from services.appuntamento import AppuntamentoService, SlotNonDisponibileError
+from services.pagamento import PagamentoService
 from services.referto import RefertoService
 
 router = APIRouter(prefix="/api/appuntamenti", tags=["appuntamenti"])
@@ -187,5 +189,23 @@ async def carica_referto(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post(
+    "/{appuntamento_id}/pagamento",
+    response_model=PagamentoRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="L'amministratore registra l'incasso di un appuntamento completato",
+    dependencies=[Depends(RoleChecker(["admin"]))],
+)
+def registra_pagamento(
+    appuntamento_id: int, payload: PagamentoCreate, db: Session = Depends(get_db)
+):
+    try:
+        return PagamentoService(db).registra_incasso(appuntamento_id, payload.importo)
+    except LookupError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

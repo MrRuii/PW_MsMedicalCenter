@@ -31,6 +31,19 @@
         <span class="mt-4 block font-medium text-gray-900 group-hover:text-primary-700">Crea medico</span>
         <span class="mt-1 block text-sm text-gray-500">Nuovo account medico e sue specialità</span>
       </router-link>
+
+      <router-link
+        to="/admin/dashboard"
+        class="group rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:border-accent-300 hover:shadow-md"
+      >
+        <span class="flex h-10 w-10 items-center justify-center rounded-md bg-accent-100 text-accent-800">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l4-5 3 3 5-7" />
+          </svg>
+        </span>
+        <span class="mt-4 block font-medium text-gray-900 group-hover:text-accent-800">Dashboard incassi</span>
+        <span class="mt-1 block text-sm text-gray-500">KPI, andamento incassi e registrazione pagamenti</span>
+      </router-link>
     </div>
   </div>
 </template>

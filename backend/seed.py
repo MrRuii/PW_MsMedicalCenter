@@ -3,7 +3,17 @@ from datetime import date, datetime, time, timedelta
 
 from core.database import Base, LocalSession, engine
 from core.security import hash_password
-from models import Appuntamento, Disponibilita, Medico, Paziente, Prestazione, Sede, Specialita, Utente
+from models import (
+    Appuntamento,
+    Disponibilita,
+    Medico,
+    Pagamento,
+    Paziente,
+    Prestazione,
+    Sede,
+    Specialita,
+    Utente,
+)
 
 DEFAULT_PASSWORD = "Password123!"
 
@@ -134,6 +144,30 @@ def prenota_slot(db, disponibilita: Disponibilita, paziente: Paziente, prestazio
     return appuntamento
 
 
+def genera_pagamenti_mancanti(db) -> int:
+    completati = db.query(Appuntamento).filter(Appuntamento.stato == "completato").all()
+    creati = 0
+    for appuntamento in completati:
+        if appuntamento.pagamento is not None:
+            continue
+        prezzo_listino = float(appuntamento.prestazione.prezzo)
+        importo = round(prezzo_listino * random.uniform(0.9, 1.1), 2)
+        data_pagamento = min(
+            appuntamento.data_ora.date() + timedelta(days=random.randint(0, 2)), date.today()
+        )
+        stato = "rimborsato" if random.random() < 0.08 else "pagato"
+        db.add(
+            Pagamento(
+                appuntamento_id=appuntamento.id,
+                importo=importo,
+                data=data_pagamento,
+                stato=stato,
+            )
+        )
+        creati += 1
+    return creati
+
+
 def seed():
     Base.metadata.create_all(bind=engine)
     db = LocalSession()
@@ -242,6 +276,9 @@ def seed():
             prenota_slot(db, disponibilita, paziente, prestazione, stato)
             appuntamenti_creati += 1
 
+    db.flush()
+    pagamenti_creati = genera_pagamenti_mancanti(db)
+
     db.commit()
     db.close()
 
@@ -253,6 +290,7 @@ def seed():
     print(f"  Disponibilita create: {len(slot_nuovi)}")
     print(f"  Pazienti aggiunti: {pazienti_creati}")
     print(f"  Appuntamenti creati: {appuntamenti_creati}")
+    print(f"  Pagamenti generati: {pagamenti_creati}")
 
 
 if __name__ == "__main__":

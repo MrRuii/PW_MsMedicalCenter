@@ -76,3 +76,29 @@ export interface Referto {
   data: string
   descrizione: string | null
 }
+
+export interface Pagamento {
+  id: number
+  appuntamento_id: number
+  importo: number
+  data: string | null
+  stato: 'in attesa' | 'pagato' | 'rimborsato'
+}
+
+export interface DashboardKPI {
+  incasso_totale: number
+  numero_prestazioni: number
+  ticket_medio: number
+}
+
+export interface IncassoRaggruppato {
+  etichetta: string
+  totale: number
+}
+
+export interface PrestazioneStat {
+  prestazione_id: number
+  nome: string
+  numero: number
+  incasso: number
+}

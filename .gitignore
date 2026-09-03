@@ -38,6 +38,7 @@ pnpm-debug.log*
 !.vscode/extensions.json
 .idea/
 *.swp
+.claude/
 
 # ---------- OS ----------
 .DS_Store

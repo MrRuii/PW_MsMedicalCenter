@@ -21,3 +21,8 @@ export function formatDataOra(dataOra: string): string {
 export function formatPrezzo(prezzo: number): string {
   return `€ ${prezzo.toFixed(2)}`
 }
+
+export function formatMese(mese: string): string {
+  const d = new Date(`${mese}-01T00:00:00`)
+  return d.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' })
+}

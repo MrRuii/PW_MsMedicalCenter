@@ -3,8 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers.appuntamenti import router as appuntamenti_router
 from routers.auth import router as auth_router
+from routers.dashboard import router as dashboard_router
 from routers.disponibilita import router as disponibilita_router
 from routers.medici import router as medici_router
+from routers.pagamenti import router as pagamenti_router
 from routers.prestazioni import router as prestazioni_router
 from routers.referti import router as referti_router
 from routers.sedi import router as sedi_router
@@ -28,6 +30,8 @@ app.include_router(medici_router)
 app.include_router(disponibilita_router)
 app.include_router(appuntamenti_router)
 app.include_router(referti_router)
+app.include_router(pagamenti_router)
+app.include_router(dashboard_router)
 
 
 @app.get("/", tags=["root"], summary="Messaggio di benvenuto")

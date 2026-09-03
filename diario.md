@@ -62,3 +62,9 @@
 - **~5h05min** — Frontend medico: agenda e disponibilità; qualche fix al backend
 - **~3h55min** — Frontend admin: gestione utenti e creazione medico; blocco accesso utenti disattivati; fix messaggio login
 - **~6h25min** — Modulo referti: upload con validazione formato e dimensione, permessi per ruolo, download protetto; pagine referti per medico e paziente 
+
+### 2026-09-03 — ~9h45min
+
+- **~25 min** — Pagine privacy e termini di servizio: rimossa la nota "pagina dimostrativa", aggiunti riferimenti al GDPR
+- **~30 min** — Verifica di sicurezza sui referti: confermato 403 su accesso incrociato tra pazienti
+- **~8h50min** — Modulo dashboard: seed con pagamenti, repository/service/router per pagamenti e dashboard, Chart.js, pagina admin con KPI/grafici/tabella pagamenti; aggiunta validazione sull'importo
