@@ -68,3 +68,12 @@
 - **~25 min** — Pagine privacy e termini di servizio: rimossa la nota "pagina dimostrativa", aggiunti riferimenti al GDPR
 - **~30 min** — Verifica di sicurezza sui referti: confermato 403 su accesso incrociato tra pazienti
 - **~8h50min** — Modulo dashboard: seed con pagamenti, repository/service/router per pagamenti e dashboard, Chart.js, pagina admin con KPI/grafici/tabella pagamenti; aggiunta validazione sull'importo
+
+### 2026-09-04 — ~5h20min
+
+- **~50 min** — Verifica checklist di consolidamento
+- **~20 min** — Pulizia cartella documentazione
+- **~40 min** — Corretto diagramma dei casi d'uso
+- **~2h10min** — Seed più realistico: specialità correlate, 6 nuove specialità
+- **~50 min** — openapi.json e riorganizzazione screenshot
+- **~30 min** — README.md

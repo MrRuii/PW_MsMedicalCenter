@@ -1,0 +1,2142 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "FastAPI", "version": "0.1.0" },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Registra un nuovo paziente",
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterPazienteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UtenteRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Login e ottenimento del token JWT",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TokenRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Dati dell'utente autenticato",
+        "operationId": "me_api_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UtenteRead" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/auth/users/{user_id}": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Dettaglio di un utente per id (solo admin)",
+        "operationId": "get_utente_api_auth_users__user_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "User Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UtenteDettaglio" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["auth"],
+        "summary": "Modifica il profilo o lo stato di un utente (solo admin)",
+        "operationId": "update_utente_api_auth_users__user_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "User Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UtenteEditRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UtenteDettaglio" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/users": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Elenco di tutti gli utenti (solo admin)",
+        "operationId": "get_utenti_api_auth_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/UtenteDettaglio" },
+                  "type": "array",
+                  "title": "Response Get Utenti Api Auth Users Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/specialita": {
+      "get": {
+        "tags": ["specialita"],
+        "summary": "Elenco delle specialità",
+        "operationId": "get_specialita_api_specialita_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/SpecialitaRead" },
+                  "type": "array",
+                  "title": "Response Get Specialita Api Specialita Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prestazioni": {
+      "get": {
+        "tags": ["prestazioni"],
+        "summary": "Elenco delle prestazioni, filtrabile per specialità",
+        "operationId": "get_prestazioni_api_prestazioni_get",
+        "parameters": [
+          {
+            "name": "specialita_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Specialita Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PrestazioneRead" },
+                  "title": "Response Get Prestazioni Api Prestazioni Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["prestazioni"],
+        "summary": "Crea una prestazione (solo admin)",
+        "operationId": "create_prestazione_api_prestazioni_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PrestazioneCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PrestazioneRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prestazioni/{prestazione_id}": {
+      "put": {
+        "tags": ["prestazioni"],
+        "summary": "Modifica una prestazione (solo admin)",
+        "operationId": "update_prestazione_api_prestazioni__prestazione_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "prestazione_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Prestazione Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PrestazioneUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PrestazioneRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["prestazioni"],
+        "summary": "Elimina una prestazione (solo admin)",
+        "operationId": "delete_prestazione_api_prestazioni__prestazione_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "prestazione_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Prestazione Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sedi": {
+      "get": {
+        "tags": ["sedi"],
+        "summary": "Elenco delle sedi",
+        "operationId": "get_sedi_api_sedi_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/SedeRead" },
+                  "type": "array",
+                  "title": "Response Get Sedi Api Sedi Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["sedi"],
+        "summary": "Crea una sede (solo admin)",
+        "operationId": "create_sede_api_sedi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SedeCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SedeRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/sedi/{sede_id}": {
+      "put": {
+        "tags": ["sedi"],
+        "summary": "Modifica una sede (solo admin)",
+        "operationId": "update_sede_api_sedi__sede_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "sede_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Sede Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SedeUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SedeRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["sedi"],
+        "summary": "Elimina una sede (solo admin)",
+        "operationId": "delete_sede_api_sedi__sede_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "sede_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Sede Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/medici": {
+      "get": {
+        "tags": ["medici"],
+        "summary": "Elenco dei medici, filtrabile per specialità",
+        "operationId": "get_medici_api_medici_get",
+        "parameters": [
+          {
+            "name": "specialita_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Specialita Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MedicoRead" },
+                  "title": "Response Get Medici Api Medici Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["medici"],
+        "summary": "Crea un medico (solo admin)",
+        "operationId": "create_medico_api_medici_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MedicoCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MedicoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/medici/{medico_id}": {
+      "get": {
+        "tags": ["medici"],
+        "summary": "Dettaglio di un medico",
+        "operationId": "get_medico_api_medici__medico_id__get",
+        "parameters": [
+          {
+            "name": "medico_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Medico Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MedicoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["medici"],
+        "summary": "Modifica un medico (solo admin)",
+        "operationId": "update_medico_api_medici__medico_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "medico_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Medico Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MedicoUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MedicoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["medici"],
+        "summary": "Elimina un medico (solo admin)",
+        "operationId": "delete_medico_api_medici__medico_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "medico_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Medico Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/medici/{medico_id}/disponibilita": {
+      "get": {
+        "tags": ["medici"],
+        "summary": "Disponibilità (libere e occupate) di un medico",
+        "operationId": "get_disponibilita_medico_api_medici__medico_id__disponibilita_get",
+        "parameters": [
+          {
+            "name": "medico_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Medico Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/DisponibilitaRead" },
+                  "title": "Response Get Disponibilita Medico Api Medici  Medico Id  Disponibilita Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/disponibilita": {
+      "get": {
+        "tags": ["disponibilita"],
+        "summary": "Elenco degli slot liberi, filtrabile per medico e sede",
+        "operationId": "get_disponibilita_libere_api_disponibilita_get",
+        "parameters": [
+          {
+            "name": "medico_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Medico Id"
+            }
+          },
+          {
+            "name": "sede_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "integer" }, { "type": "null" }],
+              "title": "Sede Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/DisponibilitaRead" },
+                  "title": "Response Get Disponibilita Libere Api Disponibilita Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["disponibilita"],
+        "summary": "Il medico autenticato crea una propria fascia di disponibilità",
+        "operationId": "create_disponibilita_api_disponibilita_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DisponibilitaCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DisponibilitaRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/disponibilita/{disponibilita_id}": {
+      "put": {
+        "tags": ["disponibilita"],
+        "summary": "Modifica una fascia di disponibilità, solo se libera (medico proprietario o admin)",
+        "operationId": "update_disponibilita_api_disponibilita__disponibilita_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "disponibilita_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Disponibilita Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DisponibilitaUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DisponibilitaRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["disponibilita"],
+        "summary": "Elimina una fascia di disponibilità, solo se libera (medico proprietario o admin)",
+        "operationId": "delete_disponibilita_api_disponibilita__disponibilita_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "disponibilita_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Disponibilita Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti": {
+      "get": {
+        "tags": ["appuntamenti"],
+        "summary": "Elenco appuntamenti, filtrato in base al ruolo dell'utente autenticato",
+        "operationId": "get_appuntamenti_api_appuntamenti_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/AppuntamentoRead" },
+                  "type": "array",
+                  "title": "Response Get Appuntamenti Api Appuntamenti Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      },
+      "post": {
+        "tags": ["appuntamenti"],
+        "summary": "Il paziente autenticato prenota un appuntamento",
+        "operationId": "prenota_appuntamento_api_appuntamenti_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AppuntamentoCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppuntamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}": {
+      "get": {
+        "tags": ["appuntamenti"],
+        "summary": "Dettaglio di un appuntamento (solo chi ne è parte, o admin)",
+        "operationId": "get_appuntamento_api_appuntamenti__appuntamento_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppuntamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}/annulla": {
+      "patch": {
+        "tags": ["appuntamenti"],
+        "summary": "Annulla un appuntamento e libera lo slot (paziente, medico coinvolti, o admin)",
+        "operationId": "annulla_appuntamento_api_appuntamenti__appuntamento_id__annulla_patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppuntamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}/conferma": {
+      "patch": {
+        "tags": ["appuntamenti"],
+        "summary": "Il medico (o admin) conferma un appuntamento prenotato",
+        "operationId": "conferma_appuntamento_api_appuntamenti__appuntamento_id__conferma_patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppuntamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}/completa": {
+      "patch": {
+        "tags": ["appuntamenti"],
+        "summary": "Il medico (o admin) segna un appuntamento come completato",
+        "operationId": "completa_appuntamento_api_appuntamenti__appuntamento_id__completa_patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppuntamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}/referto": {
+      "post": {
+        "tags": ["appuntamenti"],
+        "summary": "Il medico (o admin) carica il referto di un appuntamento completato",
+        "operationId": "carica_referto_api_appuntamenti__appuntamento_id__referto_post",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_carica_referto_api_appuntamenti__appuntamento_id__referto_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RefertoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/appuntamenti/{appuntamento_id}/pagamento": {
+      "post": {
+        "tags": ["appuntamenti"],
+        "summary": "L'amministratore registra l'incasso di un appuntamento completato",
+        "operationId": "registra_pagamento_api_appuntamenti__appuntamento_id__pagamento_post",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "appuntamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Appuntamento Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PagamentoCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PagamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/referti": {
+      "get": {
+        "tags": ["referti"],
+        "summary": "Elenco referti, filtrato in base al ruolo dell'utente autenticato",
+        "operationId": "get_referti_api_referti_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/RefertoRead" },
+                  "type": "array",
+                  "title": "Response Get Referti Api Referti Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/referti/{referto_id}": {
+      "get": {
+        "tags": ["referti"],
+        "summary": "Metadati di un referto (solo chi ne ha accesso)",
+        "operationId": "get_referto_api_referti__referto_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "referto_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Referto Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RefertoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["referti"],
+        "summary": "Aggiorna la descrizione di un referto (medico proprietario o admin)",
+        "operationId": "aggiorna_referto_api_referti__referto_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "referto_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Referto Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefertoUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RefertoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["referti"],
+        "summary": "Elimina un referto (medico proprietario o admin)",
+        "operationId": "elimina_referto_api_referti__referto_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "referto_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Referto Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/referti/{referto_id}/file": {
+      "get": {
+        "tags": ["referti"],
+        "summary": "Scarica il file del referto (solo chi ne ha accesso)",
+        "operationId": "scarica_referto_api_referti__referto_id__file_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "referto_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Referto Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pagamenti": {
+      "get": {
+        "tags": ["pagamenti"],
+        "summary": "Elenco pagamenti, con filtri opzionali per periodo e stato",
+        "operationId": "get_pagamenti_api_pagamenti_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "da",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "Da"
+            }
+          },
+          {
+            "name": "a",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "A"
+            }
+          },
+          {
+            "name": "stato",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Stato"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PagamentoRead" },
+                  "title": "Response Get Pagamenti Api Pagamenti Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pagamenti/{pagamento_id}/rimborsa": {
+      "patch": {
+        "tags": ["pagamenti"],
+        "summary": "Segna un pagamento come rimborsato",
+        "operationId": "rimborsa_pagamento_api_pagamenti__pagamento_id__rimborsa_patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "pagamento_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "title": "Pagamento Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PagamentoRead" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/kpi": {
+      "get": {
+        "tags": ["dashboard"],
+        "summary": "KPI aggregati del periodo: incasso totale, numero prestazioni, ticket medio",
+        "operationId": "get_kpi_api_dashboard_kpi_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "da",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "Da"
+            }
+          },
+          {
+            "name": "a",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "A"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DashboardKPI" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/incassi": {
+      "get": {
+        "tags": ["dashboard"],
+        "summary": "Incassi del periodo raggruppati per specialita, sede o mese",
+        "operationId": "get_incassi_api_dashboard_incassi_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "raggruppa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "specialita",
+              "title": "Raggruppa"
+            }
+          },
+          {
+            "name": "da",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "Da"
+            }
+          },
+          {
+            "name": "a",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "A"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IncassoRaggruppato"
+                  },
+                  "title": "Response Get Incassi Api Dashboard Incassi Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/prestazioni": {
+      "get": {
+        "tags": ["dashboard"],
+        "summary": "Numero di prestazioni erogate e relativo incasso nel periodo, per prestazione",
+        "operationId": "get_prestazioni_api_dashboard_prestazioni_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "da",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "Da"
+            }
+          },
+          {
+            "name": "a",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "date" },
+                { "type": "null" }
+              ],
+              "title": "A"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/PrestazioneStat" },
+                  "title": "Response Get Prestazioni Api Dashboard Prestazioni Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": ["root"],
+        "summary": "Messaggio di benvenuto",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["root"],
+        "summary": "Stato di salute del servizio",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AppuntamentoCreate": {
+        "properties": {
+          "disponibilita_id": {
+            "type": "integer",
+            "title": "Disponibilita Id"
+          },
+          "prestazione_id": { "type": "integer", "title": "Prestazione Id" }
+        },
+        "type": "object",
+        "required": ["disponibilita_id", "prestazione_id"],
+        "title": "AppuntamentoCreate"
+      },
+      "AppuntamentoRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "paziente_id": { "type": "integer", "title": "Paziente Id" },
+          "paziente": { "$ref": "#/components/schemas/PazienteRead" },
+          "medico_id": { "type": "integer", "title": "Medico Id" },
+          "sede_id": { "type": "integer", "title": "Sede Id" },
+          "prestazione_id": { "type": "integer", "title": "Prestazione Id" },
+          "disponibilita_id": {
+            "type": "integer",
+            "title": "Disponibilita Id"
+          },
+          "data_ora": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Data Ora"
+          },
+          "stato": { "type": "string", "title": "Stato" },
+          "created_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "paziente_id",
+          "paziente",
+          "medico_id",
+          "sede_id",
+          "prestazione_id",
+          "disponibilita_id",
+          "data_ora",
+          "stato",
+          "created_at"
+        ],
+        "title": "AppuntamentoRead"
+      },
+      "Body_carica_referto_api_appuntamenti__appuntamento_id__referto_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "descrizione": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Descrizione"
+          }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_carica_referto_api_appuntamenti__appuntamento_id__referto_post"
+      },
+      "DashboardKPI": {
+        "properties": {
+          "incasso_totale": { "type": "number", "title": "Incasso Totale" },
+          "numero_prestazioni": {
+            "type": "integer",
+            "title": "Numero Prestazioni"
+          },
+          "ticket_medio": { "type": "number", "title": "Ticket Medio" }
+        },
+        "type": "object",
+        "required": ["incasso_totale", "numero_prestazioni", "ticket_medio"],
+        "title": "DashboardKPI"
+      },
+      "DisponibilitaCreate": {
+        "properties": {
+          "sede_id": { "type": "integer", "title": "Sede Id" },
+          "data": { "type": "string", "format": "date", "title": "Data" },
+          "ora_inizio": {
+            "type": "string",
+            "format": "time",
+            "title": "Ora Inizio"
+          },
+          "ora_fine": {
+            "type": "string",
+            "format": "time",
+            "title": "Ora Fine"
+          }
+        },
+        "type": "object",
+        "required": ["sede_id", "data", "ora_inizio", "ora_fine"],
+        "title": "DisponibilitaCreate"
+      },
+      "DisponibilitaRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "medico_id": { "type": "integer", "title": "Medico Id" },
+          "sede_id": { "type": "integer", "title": "Sede Id" },
+          "data": { "type": "string", "format": "date", "title": "Data" },
+          "ora_inizio": {
+            "type": "string",
+            "format": "time",
+            "title": "Ora Inizio"
+          },
+          "ora_fine": {
+            "type": "string",
+            "format": "time",
+            "title": "Ora Fine"
+          },
+          "libera": { "type": "boolean", "title": "Libera" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "medico_id",
+          "sede_id",
+          "data",
+          "ora_inizio",
+          "ora_fine",
+          "libera"
+        ],
+        "title": "DisponibilitaRead"
+      },
+      "DisponibilitaUpdate": {
+        "properties": {
+          "sede_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Sede Id"
+          },
+          "data": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Data"
+          },
+          "ora_inizio": {
+            "anyOf": [
+              { "type": "string", "format": "time" },
+              { "type": "null" }
+            ],
+            "title": "Ora Inizio"
+          },
+          "ora_fine": {
+            "anyOf": [
+              { "type": "string", "format": "time" },
+              { "type": "null" }
+            ],
+            "title": "Ora Fine"
+          }
+        },
+        "type": "object",
+        "title": "DisponibilitaUpdate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IncassoRaggruppato": {
+        "properties": {
+          "etichetta": { "type": "string", "title": "Etichetta" },
+          "totale": { "type": "number", "title": "Totale" }
+        },
+        "type": "object",
+        "required": ["etichetta", "totale"],
+        "title": "IncassoRaggruppato"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "title": "Password" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "LoginRequest"
+      },
+      "MedicoCreate": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "minLength": 8, "title": "Password" },
+          "nome": { "type": "string", "title": "Nome" },
+          "cognome": { "type": "string", "title": "Cognome" },
+          "numero_albo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Numero Albo"
+          },
+          "specialita_ids": {
+            "items": { "type": "integer" },
+            "type": "array",
+            "title": "Specialita Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["email", "password", "nome", "cognome"],
+        "title": "MedicoCreate"
+      },
+      "MedicoRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "cognome": { "type": "string", "title": "Cognome" },
+          "numero_albo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Numero Albo"
+          },
+          "specialita": {
+            "items": { "$ref": "#/components/schemas/SpecialitaRead" },
+            "type": "array",
+            "title": "Specialita",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": ["id", "nome", "cognome", "numero_albo"],
+        "title": "MedicoRead"
+      },
+      "MedicoUpdate": {
+        "properties": {
+          "nome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Nome"
+          },
+          "cognome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cognome"
+          },
+          "numero_albo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Numero Albo"
+          },
+          "specialita_ids": {
+            "anyOf": [
+              { "items": { "type": "integer" }, "type": "array" },
+              { "type": "null" }
+            ],
+            "title": "Specialita Ids"
+          }
+        },
+        "type": "object",
+        "title": "MedicoUpdate"
+      },
+      "PagamentoCreate": {
+        "properties": {
+          "importo": {
+            "anyOf": [
+              { "type": "number", "exclusiveMinimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Importo"
+          }
+        },
+        "type": "object",
+        "title": "PagamentoCreate"
+      },
+      "PagamentoRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "appuntamento_id": { "type": "integer", "title": "Appuntamento Id" },
+          "importo": { "type": "number", "title": "Importo" },
+          "data": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Data"
+          },
+          "stato": { "type": "string", "title": "Stato" }
+        },
+        "type": "object",
+        "required": ["id", "appuntamento_id", "importo", "data", "stato"],
+        "title": "PagamentoRead"
+      },
+      "PazienteRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "cognome": { "type": "string", "title": "Cognome" },
+          "telefono": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Telefono"
+          }
+        },
+        "type": "object",
+        "required": ["id", "nome", "cognome", "telefono"],
+        "title": "PazienteRead"
+      },
+      "PrestazioneCreate": {
+        "properties": {
+          "specialita_id": { "type": "integer", "title": "Specialita Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "durata_min": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Durata Min"
+          },
+          "prezzo": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Prezzo"
+          }
+        },
+        "type": "object",
+        "required": ["specialita_id", "nome", "durata_min", "prezzo"],
+        "title": "PrestazioneCreate"
+      },
+      "PrestazioneRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "specialita_id": { "type": "integer", "title": "Specialita Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "durata_min": { "type": "integer", "title": "Durata Min" },
+          "prezzo": { "type": "number", "title": "Prezzo" }
+        },
+        "type": "object",
+        "required": ["id", "specialita_id", "nome", "durata_min", "prezzo"],
+        "title": "PrestazioneRead"
+      },
+      "PrestazioneStat": {
+        "properties": {
+          "prestazione_id": { "type": "integer", "title": "Prestazione Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "numero": { "type": "integer", "title": "Numero" },
+          "incasso": { "type": "number", "title": "Incasso" }
+        },
+        "type": "object",
+        "required": ["prestazione_id", "nome", "numero", "incasso"],
+        "title": "PrestazioneStat"
+      },
+      "PrestazioneUpdate": {
+        "properties": {
+          "specialita_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Specialita Id"
+          },
+          "nome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Nome"
+          },
+          "durata_min": {
+            "anyOf": [
+              { "type": "integer", "exclusiveMinimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Durata Min"
+          },
+          "prezzo": {
+            "anyOf": [
+              { "type": "number", "exclusiveMinimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Prezzo"
+          }
+        },
+        "type": "object",
+        "title": "PrestazioneUpdate"
+      },
+      "RefertoRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "appuntamento_id": { "type": "integer", "title": "Appuntamento Id" },
+          "data": { "type": "string", "format": "date", "title": "Data" },
+          "descrizione": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Descrizione"
+          }
+        },
+        "type": "object",
+        "required": ["id", "appuntamento_id", "data", "descrizione"],
+        "title": "RefertoRead"
+      },
+      "RefertoUpdate": {
+        "properties": {
+          "descrizione": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Descrizione"
+          }
+        },
+        "type": "object",
+        "title": "RefertoUpdate"
+      },
+      "RegisterPazienteRequest": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "minLength": 8, "title": "Password" },
+          "nome": { "type": "string", "title": "Nome" },
+          "cognome": { "type": "string", "title": "Cognome" },
+          "codice_fiscale": { "type": "string", "title": "Codice Fiscale" },
+          "data_nascita": {
+            "anyOf": [
+              { "type": "string", "format": "date" },
+              { "type": "null" }
+            ],
+            "title": "Data Nascita"
+          },
+          "telefono": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Telefono"
+          }
+        },
+        "type": "object",
+        "required": ["email", "password", "nome", "cognome", "codice_fiscale"],
+        "title": "RegisterPazienteRequest"
+      },
+      "SedeCreate": {
+        "properties": {
+          "nome": { "type": "string", "title": "Nome" },
+          "citta": { "type": "string", "title": "Citta" },
+          "indirizzo": { "type": "string", "title": "Indirizzo" }
+        },
+        "type": "object",
+        "required": ["nome", "citta", "indirizzo"],
+        "title": "SedeCreate"
+      },
+      "SedeRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "citta": { "type": "string", "title": "Citta" },
+          "indirizzo": { "type": "string", "title": "Indirizzo" }
+        },
+        "type": "object",
+        "required": ["id", "nome", "citta", "indirizzo"],
+        "title": "SedeRead"
+      },
+      "SedeUpdate": {
+        "properties": {
+          "nome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Nome"
+          },
+          "citta": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Citta"
+          },
+          "indirizzo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Indirizzo"
+          }
+        },
+        "type": "object",
+        "title": "SedeUpdate"
+      },
+      "SpecialitaRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "nome": { "type": "string", "title": "Nome" },
+          "descrizione": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Descrizione"
+          }
+        },
+        "type": "object",
+        "required": ["id", "nome", "descrizione"],
+        "title": "SpecialitaRead"
+      },
+      "TokenRead": {
+        "properties": {
+          "access_token": { "type": "string", "title": "Access Token" },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": ["access_token"],
+        "title": "TokenRead"
+      },
+      "UtenteDettaglio": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "ruolo": { "type": "string", "title": "Ruolo" },
+          "is_active": { "type": "boolean", "title": "Is Active" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "nome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Nome"
+          },
+          "cognome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cognome"
+          },
+          "telefono": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Telefono"
+          },
+          "codice_fiscale": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Codice Fiscale"
+          },
+          "numero_albo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Numero Albo"
+          }
+        },
+        "type": "object",
+        "required": ["id", "email", "ruolo", "is_active", "created_at"],
+        "title": "UtenteDettaglio"
+      },
+      "UtenteEditRequest": {
+        "properties": {
+          "nome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Nome"
+          },
+          "cognome": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cognome"
+          },
+          "telefono": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Telefono"
+          },
+          "numero_albo": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Numero Albo"
+          },
+          "is_active": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "title": "UtenteEditRequest"
+      },
+      "UtenteRead": {
+        "properties": {
+          "id": { "type": "integer", "title": "Id" },
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "ruolo": { "type": "string", "title": "Ruolo" },
+          "is_active": { "type": "boolean", "title": "Is Active" },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "medico_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Medico Id"
+          },
+          "paziente_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Paziente Id"
+          }
+        },
+        "type": "object",
+        "required": ["id", "email", "ruolo", "is_active", "created_at"],
+        "title": "UtenteRead"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" },
+          "input": { "title": "Input" },
+          "ctx": { "type": "object", "title": "Context" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+  }
+}

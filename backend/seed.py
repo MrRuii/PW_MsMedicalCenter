@@ -34,6 +34,17 @@ ORARI = [
     (time(16, 0), time(16, 30)),
 ]
 
+GIORNI_STORICO_MASSIMI = 75
+GIORNI_FUTURI_MASSIMI = 14
+DISPONIBILITA_PER_MEDICO = 9
+NUMERO_PAZIENTI = 8
+
+GRUPPI_SPECIALITA_CORRELATE = [
+    {"Ortopedia", "Fisiatria"},
+    {"Ginecologia", "Ostetricia"},
+    {"Dermatologia", "Allergologia"},
+]
+
 
 def random_codice_fiscale() -> str:
     lettere = "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ", k=6))
@@ -92,10 +103,10 @@ def get_or_create_prestazione(db, specialita, nome, durata_min, prezzo) -> Prest
     return prestazione
 
 
-def get_or_create_utente(db, email, ruolo) -> tuple[Utente, bool]:
+def get_or_create_utente(db, email, ruolo) -> Utente:
     utente = db.query(Utente).filter_by(email=email).first()
     if utente:
-        return utente, False
+        return utente
     utente = Utente(
         email=email,
         password_hash=hash_password(DEFAULT_PASSWORD),
@@ -104,17 +115,94 @@ def get_or_create_utente(db, email, ruolo) -> tuple[Utente, bool]:
     )
     db.add(utente)
     db.flush()
-    return utente, True
+    return utente
 
 
-def crea_disponibilita_per_medico(db, medico: Medico, sedi: list[Sede]) -> list[Disponibilita]:
+def crea_catalogo(db) -> tuple[list[Sede], list[Specialita], list[Prestazione]]:
+    sedi = [
+        get_or_create_sede(db, "Sede Centrale", "Roma", "Via Roma 1"),
+        get_or_create_sede(db, "Sede Nord", "Milano", "Via Milano 10"),
+    ]
+
+    specialita_catalogo = [
+        ("Cardiologia", "Diagnosi e cura delle malattie cardiovascolari"),
+        ("Dermatologia", "Diagnosi e cura delle malattie della pelle"),
+        ("Allergologia", "Diagnosi e cura delle allergie e delle intolleranze"),
+        ("Ortopedia", "Diagnosi e cura di ossa, articolazioni e muscoli"),
+        ("Fisiatria", "Riabilitazione motoria e recupero funzionale"),
+        ("Pediatria", "Cura della salute dei bambini"),
+        ("Oculistica", "Diagnosi e cura delle malattie degli occhi"),
+        ("Ginecologia", "Salute dell'apparato riproduttivo femminile"),
+        ("Ostetricia", "Assistenza alla gravidanza e al parto"),
+        ("Radiologia", "Diagnostica per immagini"),
+        ("Otorinolaringoiatria", "Diagnosi e cura di orecchio, naso e gola"),
+        ("Neurologia", "Diagnosi e cura delle malattie del sistema nervoso"),
+    ]
+    specialita = [get_or_create_specialita(db, nome, desc) for nome, desc in specialita_catalogo]
+    (
+        cardiologia,
+        dermatologia,
+        allergologia,
+        ortopedia,
+        fisiatria,
+        pediatria,
+        oculistica,
+        ginecologia,
+        ostetricia,
+        radiologia,
+        otorinolaringoiatria,
+        neurologia,
+    ) = specialita
+
+    prestazioni_catalogo = [
+        (cardiologia, "Visita cardiologica", 30, 80),
+        (cardiologia, "Elettrocardiogramma", 20, 50),
+        (dermatologia, "Visita dermatologica", 30, 70),
+        (dermatologia, "Mappatura nei", 45, 100),
+        (allergologia, "Visita allergologica", 30, 75),
+        (allergologia, "Test allergologici", 45, 90),
+        (ortopedia, "Visita ortopedica", 30, 75),
+        (ortopedia, "Infiltrazione", 20, 60),
+        (fisiatria, "Visita fisiatrica", 30, 70),
+        (fisiatria, "Seduta di riabilitazione", 45, 45),
+        (pediatria, "Visita pediatrica", 30, 60),
+        (pediatria, "Vaccinazione", 15, 35),
+        (oculistica, "Visita oculistica", 30, 70),
+        (oculistica, "Esame della vista", 20, 40),
+        (ginecologia, "Visita ginecologica", 30, 80),
+        (ginecologia, "Ecografia ginecologica", 30, 90),
+        (ostetricia, "Visita ostetrica", 30, 85),
+        (ostetricia, "Ecografia in gravidanza", 30, 100),
+        (radiologia, "TAC", 30, 150),
+        (radiologia, "Risonanza magnetica", 45, 220),
+        (otorinolaringoiatria, "Visita otorinolaringoiatrica", 30, 70),
+        (otorinolaringoiatria, "Esame audiometrico", 20, 50),
+        (neurologia, "Visita neurologica", 30, 90),
+        (neurologia, "Elettroencefalogramma", 30, 110),
+    ]
+    prestazioni = [
+        get_or_create_prestazione(db, sp, nome, dur, prezzo)
+        for sp, nome, dur, prezzo in prestazioni_catalogo
+    ]
+
+    return sedi, specialita, prestazioni
+
+
+def specialita_correlate(specialita_principale: Specialita, tutte: list[Specialita]) -> list[Specialita]:
+    for gruppo in GRUPPI_SPECIALITA_CORRELATE:
+        if specialita_principale.nome in gruppo:
+            return [s for s in tutte if s.nome in gruppo and s.id != specialita_principale.id]
+    return []
+
+
+def crea_disponibilita_per_medico(db, medico: Medico, sedi: list[Sede], quantita: int) -> list[Disponibilita]:
     slot_creati = []
-    for _ in range(random.randint(4, 6)):
-        nel_passato = random.random() < 0.3
+    for _ in range(quantita):
+        nel_passato = random.random() < 0.55
         if nel_passato:
-            giorno = date.today() - timedelta(days=random.randint(1, 10))
+            giorno = date.today() - timedelta(days=random.randint(1, GIORNI_STORICO_MASSIMI))
         else:
-            giorno = date.today() + timedelta(days=random.randint(1, 14))
+            giorno = date.today() + timedelta(days=random.randint(1, GIORNI_FUTURI_MASSIMI))
         ora_inizio, ora_fine = random.choice(ORARI)
         sede = random.choice(sedi)
         disponibilita = Disponibilita(
@@ -130,6 +218,63 @@ def crea_disponibilita_per_medico(db, medico: Medico, sedi: list[Sede]) -> list[
     return slot_creati
 
 
+def crea_medici(db, specialita: list[Specialita], sedi: list[Sede]) -> tuple[list[Medico], list[Disponibilita]]:
+    nomi_disponibili = NOMI.copy()
+    cognomi_disponibili = COGNOMI.copy()
+    random.shuffle(nomi_disponibili)
+    random.shuffle(cognomi_disponibili)
+
+    medici_creati = []
+    slot_totali = []
+    for specialita_principale in specialita:
+        nome, cognome = nomi_disponibili.pop(), cognomi_disponibili.pop()
+        utente = get_or_create_utente(db, crea_email(nome, cognome, "msmedicalcenter.it"), "medico")
+
+        specialita_medico = [specialita_principale]
+        correlate = specialita_correlate(specialita_principale, specialita)
+        if correlate and random.random() < 0.5:
+            specialita_medico.append(random.choice(correlate))
+
+        medico = Medico(
+            utente_id=utente.id,
+            nome=nome,
+            cognome=cognome,
+            numero_albo=random_numero_albo(),
+            specialita=specialita_medico,
+        )
+        db.add(medico)
+        db.flush()
+        medici_creati.append(medico)
+        slot_totali.extend(crea_disponibilita_per_medico(db, medico, sedi, DISPONIBILITA_PER_MEDICO))
+
+    return medici_creati, slot_totali
+
+
+def crea_pazienti(db, quantita: int) -> list[Paziente]:
+    nomi_disponibili = NOMI.copy()
+    cognomi_disponibili = COGNOMI.copy()
+    random.shuffle(nomi_disponibili)
+    random.shuffle(cognomi_disponibili)
+
+    pazienti_creati = []
+    for _ in range(quantita):
+        nome, cognome = nomi_disponibili.pop(), cognomi_disponibili.pop()
+        utente = get_or_create_utente(db, crea_email(nome, cognome, "example.com"), "paziente")
+        data_nascita = date.today() - timedelta(days=random.randint(18 * 365, 75 * 365))
+        paziente = Paziente(
+            utente_id=utente.id,
+            nome=nome,
+            cognome=cognome,
+            codice_fiscale=random_codice_fiscale(),
+            data_nascita=data_nascita,
+            telefono=random_telefono(),
+        )
+        db.add(paziente)
+        db.flush()
+        pazienti_creati.append(paziente)
+    return pazienti_creati
+
+
 def prenota_slot(db, disponibilita: Disponibilita, paziente: Paziente, prestazione: Prestazione, stato: str):
     appuntamento = Appuntamento(
         paziente_id=paziente.id,
@@ -142,6 +287,26 @@ def prenota_slot(db, disponibilita: Disponibilita, paziente: Paziente, prestazio
     )
     db.add(appuntamento)
     return appuntamento
+
+
+def crea_appuntamenti(db, slot_disponibili: list[Disponibilita], pazienti: list[Paziente], prestazioni: list[Prestazione]) -> int:
+    appuntamenti_creati = 0
+    for disponibilita in slot_disponibili:
+        if random.random() >= 0.7:
+            continue
+        medico = disponibilita.medico
+        prestazioni_del_medico = [
+            p for p in prestazioni if p.specialita_id in {s.id for s in medico.specialita}
+        ] or prestazioni
+        prestazione = random.choice(prestazioni_del_medico)
+        paziente = random.choice(pazienti)
+        if disponibilita.data < date.today():
+            stato = "completato" if random.random() < 0.75 else "annullato"
+        else:
+            stato = random.choice(["prenotato", "confermato"])
+        prenota_slot(db, disponibilita, paziente, prestazione, stato)
+        appuntamenti_creati += 1
+    return appuntamenti_creati
 
 
 def genera_pagamenti_mancanti(db) -> int:
@@ -169,115 +334,24 @@ def genera_pagamenti_mancanti(db) -> int:
 
 
 def seed():
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = LocalSession()
 
-    sedi = [
-        get_or_create_sede(db, "Sede Centrale", "Roma", "Via Roma 1"),
-        get_or_create_sede(db, "Sede Nord", "Milano", "Via Milano 10"),
-    ]
-
-    specialita_catalogo = [
-        ("Cardiologia", "Diagnosi e cura delle malattie cardiovascolari"),
-        ("Dermatologia", "Diagnosi e cura delle malattie della pelle"),
-        ("Ortopedia", "Diagnosi e cura di ossa, articolazioni e muscoli"),
-        ("Pediatria", "Cura della salute dei bambini"),
-        ("Oculistica", "Diagnosi e cura delle malattie degli occhi"),
-        ("Ginecologia", "Salute dell'apparato riproduttivo femminile"),
-    ]
-    specialita = [get_or_create_specialita(db, nome, desc) for nome, desc in specialita_catalogo]
-    cardiologia, dermatologia, ortopedia, pediatria, oculistica, ginecologia = specialita
-
-    prestazioni_catalogo = [
-        (cardiologia, "Visita cardiologica", 30, 80),
-        (cardiologia, "Elettrocardiogramma", 20, 50),
-        (dermatologia, "Visita dermatologica", 30, 70),
-        (dermatologia, "Mappatura nei", 45, 100),
-        (ortopedia, "Visita ortopedica", 30, 75),
-        (ortopedia, "Infiltrazione", 20, 60),
-        (pediatria, "Visita pediatrica", 30, 60),
-        (oculistica, "Visita oculistica", 30, 70),
-        (oculistica, "Esame della vista", 20, 40),
-        (ginecologia, "Visita ginecologica", 30, 80),
-    ]
-    prestazioni = [
-        get_or_create_prestazione(db, sp, nome, dur, prezzo)
-        for sp, nome, dur, prezzo in prestazioni_catalogo
-    ]
-
+    sedi, specialita, prestazioni = crea_catalogo(db)
     get_or_create_utente(db, "admin@msmedicalcenter.it", "admin")
 
-    nomi_disponibili = NOMI.copy()
-    cognomi_disponibili = COGNOMI.copy()
-    random.shuffle(nomi_disponibili)
-    random.shuffle(cognomi_disponibili)
-
-    medici_creati = []
-    slot_nuovi = []
-    for _ in range(random.randint(3, 4)):
-        nome, cognome = nomi_disponibili.pop(), cognomi_disponibili.pop()
-        utente, creato = get_or_create_utente(
-            db, crea_email(nome, cognome, "msmedicalcenter.it"), "medico"
-        )
-        if not creato:
-            continue
-        specialita_medico = random.sample(specialita, k=random.randint(1, 2))
-        medico = Medico(
-            utente_id=utente.id,
-            nome=nome,
-            cognome=cognome,
-            numero_albo=random_numero_albo(),
-            specialita=specialita_medico,
-        )
-        db.add(medico)
-        db.flush()
-        medici_creati.append((nome, cognome))
-        slot_nuovi.extend(crea_disponibilita_per_medico(db, medico, sedi))
-
-    pazienti_creati = []
-    for _ in range(random.randint(2, 3)):
-        nome, cognome = nomi_disponibili.pop(), cognomi_disponibili.pop()
-        utente, creato = get_or_create_utente(
-            db, crea_email(nome, cognome, "example.com"), "paziente"
-        )
-        if not creato:
-            continue
-        data_nascita = date.today() - timedelta(days=random.randint(18 * 365, 75 * 365))
-        db.add(
-            Paziente(
-                utente_id=utente.id,
-                nome=nome,
-                cognome=cognome,
-                codice_fiscale=random_codice_fiscale(),
-                data_nascita=data_nascita,
-                telefono=random_telefono(),
-            )
-        )
-        pazienti_creati.append((nome, cognome))
+    medici, slot_disponibili = crea_medici(db, specialita, sedi)
+    pazienti = crea_pazienti(db, NUMERO_PAZIENTI)
 
     db.flush()
-    tutti_pazienti = db.query(Paziente).all()
-
-    appuntamenti_creati = 0
-    if tutti_pazienti:
-        for disponibilita in slot_nuovi:
-            if random.random() >= 0.6:
-                continue
-            medico = disponibilita.medico
-            prestazioni_del_medico = [
-                p for p in prestazioni if p.specialita_id in {s.id for s in medico.specialita}
-            ] or prestazioni
-            prestazione = random.choice(prestazioni_del_medico)
-            paziente = random.choice(tutti_pazienti)
-            if disponibilita.data < date.today():
-                stato = random.choice(["completato", "annullato"])
-            else:
-                stato = random.choice(["prenotato", "confermato"])
-            prenota_slot(db, disponibilita, paziente, prestazione, stato)
-            appuntamenti_creati += 1
+    appuntamenti_creati = crea_appuntamenti(db, slot_disponibili, pazienti, prestazioni)
 
     db.flush()
     pagamenti_creati = genera_pagamenti_mancanti(db)
+
+    nomi_medici = [f"{m.nome} {m.cognome}" for m in medici]
+    nomi_pazienti = [f"{p.nome} {p.cognome}" for p in pazienti]
 
     db.commit()
     db.close()
@@ -286,9 +360,9 @@ def seed():
     print(f"  Sedi: {len(sedi)}")
     print(f"  Specialita: {len(specialita)}")
     print(f"  Prestazioni: {len(prestazioni)}")
-    print(f"  Medici aggiunti: {medici_creati}")
-    print(f"  Disponibilita create: {len(slot_nuovi)}")
-    print(f"  Pazienti aggiunti: {pazienti_creati}")
+    print(f"  Medici creati: {nomi_medici}")
+    print(f"  Disponibilita create: {len(slot_disponibili)}")
+    print(f"  Pazienti creati: {nomi_pazienti}")
     print(f"  Appuntamenti creati: {appuntamenti_creati}")
     print(f"  Pagamenti generati: {pagamenti_creati}")
 
