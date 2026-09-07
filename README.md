@@ -56,4 +56,5 @@ Password per tutti gli utenti creati dal seed: `Password123!`
 
 - Diagrammi UML (casi d'uso) ed ER: cartella `docs/`
 - Schema OpenAPI generato dall'API: `docs/openapi.json`
+- Esempio di endpoint su Swagger UI: `docs/esempio-swagger.png`
 - Diario delle attività di sviluppo: `diario.md`
